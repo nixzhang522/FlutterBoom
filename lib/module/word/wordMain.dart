@@ -36,11 +36,6 @@ class RandomWordsState extends State<RandomWords> {
         ],
       ),
       body: _buildSuggestions(),
-      bottomNavigationBar: BottomAppBar(
-        child: new Container(
-          height: 49.0,
-        ),
-      ),
     );
   }
 
