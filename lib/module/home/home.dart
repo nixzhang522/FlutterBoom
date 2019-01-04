@@ -243,4 +243,5 @@ class MovieState extends State<Home> {
     );
   }
 
+
 }
