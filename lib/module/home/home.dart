@@ -196,7 +196,7 @@ class MovieState extends State<Home> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 new Text(
-                  '推荐课程',
+                  '推荐课程', 
                   style: new TextStyle(
                       fontSize: 18,
                       height: 1.2,
@@ -242,6 +242,5 @@ class MovieState extends State<Home> {
       ),
     );
   }
-
 
 }
