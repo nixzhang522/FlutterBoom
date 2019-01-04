@@ -15,7 +15,7 @@ class MovieState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     Widget listView = new ListView.builder(
-      padding: EdgeInsets.fromLTRB(15, 88, 15, 15),
+      padding: EdgeInsets.fromLTRB(0, 88, 0, 15),
       itemCount: 10,
       itemBuilder: (context, i) => renderRow(i),
     );
@@ -35,7 +35,7 @@ class MovieState extends State<Home> {
     if (i == 0) {
       return new Container(
         height: 150.0,
-        margin: new EdgeInsets.fromLTRB(0, 15, 0, 0),
+        margin: new EdgeInsets.fromLTRB(15, 15, 15, 0),
         decoration: new BoxDecoration(
           color: Colors.green,
           borderRadius: new BorderRadius.all(new Radius.circular(6)),
@@ -47,7 +47,7 @@ class MovieState extends State<Home> {
     if (i == 1) {
       return new Container(
         height: 52,
-        margin: new EdgeInsets.fromLTRB(0, 15, 0, 0),
+        margin: new EdgeInsets.fromLTRB(15, 15, 15, 0),
         child: new Row(
           children: <Widget>[
             new Container(
@@ -84,7 +84,7 @@ class MovieState extends State<Home> {
 
       return new Container(
         height: 130,
-        margin: new EdgeInsets.fromLTRB(0, 15, 0, 0),
+        margin: new EdgeInsets.fromLTRB(15, 15, 15, 0),
         child: new GridView.builder(
           physics: new NeverScrollableScrollPhysics(),
           padding: EdgeInsets.all(0),
@@ -122,7 +122,7 @@ class MovieState extends State<Home> {
     if (i == 3) {
       return new Container(
         height: 50,
-        margin: new EdgeInsets.fromLTRB(0, 25, 0, 0),
+        margin: new EdgeInsets.fromLTRB(15, 25, 15, 0),
         child: new Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -150,15 +150,16 @@ class MovieState extends State<Home> {
       double itemWidth = (width - 15 * 2 - 10) / 2.0;
       double itemHeight = itemWidth * 7 / 11.0 + 80;
       double ratio = itemWidth / itemHeight;
+      print(itemWidth);
 
       return new Container(
-        height: itemHeight * 2 + 10,
-        margin: new EdgeInsets.fromLTRB(0, 15, 0, 0),
+        height: itemHeight * 2 + 40,
+        padding: new EdgeInsets.fromLTRB(10, 10, 10, 0),
         child: new GridView.builder(
           physics: new NeverScrollableScrollPhysics(),
           padding: EdgeInsets.all(0),
           gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: itemWidth,
+            maxCrossAxisExtent: 150,
             mainAxisSpacing: 10,
             crossAxisSpacing: 10,
             childAspectRatio: ratio,
@@ -166,6 +167,7 @@ class MovieState extends State<Home> {
           itemCount: 4,
           itemBuilder: (context, i) {
             return new Container(
+              margin: EdgeInsets.fromLTRB(5, 5, 5, 0),
               decoration: BoxDecoration(
                 color: Color(0xffffffff),
                 borderRadius: BorderRadius.all(new Radius.circular(6)),
@@ -186,7 +188,7 @@ class MovieState extends State<Home> {
     if (i == 5) {
       return new Container(
         height: 50,
-        margin: new EdgeInsets.fromLTRB(0, 20, 0, 0),
+        margin: new EdgeInsets.fromLTRB(15, 10, 15, 0),
         child: new Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
@@ -220,7 +222,7 @@ class MovieState extends State<Home> {
     // recommend course
     return new Container(
       height: 175.0,
-      padding: new EdgeInsets.fromLTRB(0, 15, 0, 0),
+      padding: new EdgeInsets.fromLTRB(15, 15, 15, 0),
       child: new Stack(
         children: <Widget>[
           new Container(
@@ -240,37 +242,6 @@ class MovieState extends State<Home> {
       ),
     );
   }
-  // @override
-  // Widget build(BuildContext context) {
-  //   return new MaterialApp(
-  //     theme: new ThemeData(primaryColor: Color(0xffffffff)),
-  //     home: new Scaffold(
-  //       appBar: new AppBar(
-  //         title: new Text("首页"),
-  //       ),
-  //       body: new GridView.count(
-  //         crossAxisCount: 2,
-  //         crossAxisSpacing: 10,
-  //         mainAxisSpacing: 10,
-  //         padding: EdgeInsets.all(10),
-  //         children: new List.generate(8, (index) {
-  //           return new Center(
-  //             child: new Container(
-  //               decoration: BoxDecoration(
-  //                 color: Color(0xff7cd58a),
-  //               ),
-  //               child: new Text("item $index",
-  //                   textAlign: TextAlign.center,
-  //                   style: TextStyle(
-  //                     fontSize: 20.0,
-  //                     fontWeight: FontWeight.bold,
-  //                     color: Colors.white,
-  //                   )),
-  //             ),
-  //           );
-  //         }),
-  //       ),
-  //     ),
-  //   );
-  // }
+
+
 }
