@@ -147,10 +147,9 @@ class MovieState extends State<Home> {
     if (i == 4) {
       Size screenSize = MediaQuery.of(context).size;
       double width = screenSize.width;
-      double itemWidth = (width - 15 * 2 - 10) / 2.0;
+      double itemWidth = (width - 10 * 2 - 10) / 2.0;
       double itemHeight = itemWidth * 7 / 11.0 + 80;
       double ratio = itemWidth / itemHeight;
-      print(itemWidth);
 
       return new Container(
         height: itemHeight * 2 + 40,
@@ -159,7 +158,7 @@ class MovieState extends State<Home> {
           physics: new NeverScrollableScrollPhysics(),
           padding: EdgeInsets.all(0),
           gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: 150,
+            maxCrossAxisExtent: itemWidth,
             mainAxisSpacing: 10,
             crossAxisSpacing: 10,
             childAspectRatio: ratio,
@@ -179,6 +178,77 @@ class MovieState extends State<Home> {
                   ),
                 ],
               ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    width: itemWidth,
+                    height: itemWidth * 7 / 11.0,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.rectangle,
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(5),
+                      ),
+                      image: DecorationImage(
+                          image: NetworkImage(
+                              "http://pic2.ooopic.com/12/58/16/15bOOOPICae.jpg"),
+                          fit: BoxFit.cover),
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    child: Text(
+                      "爆英语事务所",
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Color(0xff222626),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                    child: Text(
+                      "观看至第1集",
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Color(0xff8c8c8c),
+                      ),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Container(
+                        margin: EdgeInsets.fromLTRB(8, 5, 0, 0),
+                        padding: EdgeInsets.fromLTRB(7, 0, 7, 0),
+                        color: Color(0xfffcd433),
+                        height: 16,
+                        child: Text(
+                          "专业",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Color(0xff222626),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.fromLTRB(0, 5, 8, 0),
+                        child: Text(
+                          "免费",
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xff222626),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
             );
           },
         ),
@@ -196,7 +266,7 @@ class MovieState extends State<Home> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 new Text(
-                  '推荐课程', 
+                  '推荐课程',
                   style: new TextStyle(
                       fontSize: 18,
                       height: 1.2,
@@ -242,6 +312,4 @@ class MovieState extends State<Home> {
       ),
     );
   }
-
-
 }
