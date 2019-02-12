@@ -20,9 +20,7 @@ class MovieState extends State<Home> {
 
   Widget _requestData() {
     request.get("/v1/home/v5/", (response){
-    
-      print(response);
-      
+
       var data = response['data'];
 
       setState(() {
