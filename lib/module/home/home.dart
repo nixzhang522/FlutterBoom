@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_swiper/flutter_swiper.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -30,17 +31,41 @@ class MovieState extends State<Home> {
     );
   }
 
+  Widget _swiperBuilder(BuildContext context, int index) {
+    return (Image.network(
+      "http://pic37.photophoto.cn/20151103/0011034499985505_b.jpg",
+      fit: BoxFit.fill,
+    ));
+  }
+
   Widget renderRow(i) {
     // banner
     if (i == 0) {
+      Size screenSize = MediaQuery.of(context).size;
+      double screenWidth = screenSize.width;
+      double height = (screenWidth - 30) * 145.0 / 345.0;
+
       return new Container(
-        height: 150.0,
+        height: height,
         margin: new EdgeInsets.fromLTRB(15, 15, 15, 0),
-        decoration: new BoxDecoration(
-          color: Colors.green,
-          borderRadius: new BorderRadius.all(new Radius.circular(6)),
-        ),
-        child: new Container(),
+        child: new ClipRRect(
+          borderRadius: BorderRadius.all(new Radius.circular(6)),
+          child: Swiper(
+            itemBuilder: _swiperBuilder,
+            itemCount: 3,
+            pagination: new SwiperPagination(
+              alignment: Alignment.bottomRight,
+              builder: DotSwiperPaginationBuilder(
+                color: Colors.white30,
+                activeColor: Colors.white,
+              )
+            ),
+            scrollDirection: Axis.horizontal,
+            autoplay: true,
+            autoplayDelay: 5000,
+            onTap: (index) => print('点击了第$index个'),
+          ),
+        )
       );
     }
     // draw
@@ -191,7 +216,7 @@ class MovieState extends State<Home> {
                       ),
                       image: DecorationImage(
                           image: NetworkImage(
-                              "http://pic2.ooopic.com/12/58/16/15bOOOPICae.jpg"),
+                              "http://pic37.photophoto.cn/20151103/0011034499985505_b.jpg"),
                           fit: BoxFit.cover),
                     ),
                   ),
@@ -361,7 +386,8 @@ class MovieState extends State<Home> {
                         shape: BoxShape.rectangle,
                         borderRadius: BorderRadius.all(Radius.circular(7)),
                         image: DecorationImage(
-                            image: NetworkImage("http://pic2.ooopic.com/12/58/16/15bOOOPICae.jpg"),
+                            image: NetworkImage(
+                                "http://pic37.photophoto.cn/20151103/0011034499985505_b.jpg"),
                             fit: BoxFit.cover),
                       ),
                     )
@@ -382,45 +408,43 @@ class MovieState extends State<Home> {
                                 width: 32.0,
                                 height: 32.0,
                                 child: Image(
-                                  image: NetworkImage("http://pic2.ooopic.com/12/58/16/15bOOOPICae.jpg"),
+                                  image: NetworkImage(
+                                      "http://pic37.photophoto.cn/20151103/0011034499985505_b.jpg"),
                                   fit: BoxFit.cover,
                                 ),
                               ),
                             ),
                             Padding(
-                              padding: EdgeInsets.fromLTRB(10, 0, 0, 0), 
-                              child: Text("Vica", style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xff222626)
-                              ),),
+                              padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                              child: Text(
+                                "Vica",
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                    color: Color(0xff222626)),
+                              ),
                             )
                           ],
                         ),
                       ),
                       Container(
-                        padding: EdgeInsets.fromLTRB(0, 0, 16, 0),
-                        child: RichText(
-                          text: TextSpan(
-                            text: "RMB ",
-                            style: TextStyle(
-                              color: Color(0xff222626),
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700
-                            ),
-                            children: <TextSpan>[
-                              TextSpan(
-                                text: "1600",
+                          padding: EdgeInsets.fromLTRB(0, 0, 16, 0),
+                          child: RichText(
+                            text: TextSpan(
+                                text: "RMB ",
                                 style: TextStyle(
-                                  color: Color(0xff222626),
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700
-                                )
-                              )
-                            ]
-                          ),
-                        )
-                      )
+                                    color: Color(0xff222626),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700),
+                                children: <TextSpan>[
+                                  TextSpan(
+                                      text: "1600",
+                                      style: TextStyle(
+                                          color: Color(0xff222626),
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w700))
+                                ]),
+                          ))
                     ],
                   ),
                 )
