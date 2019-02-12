@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:boomenglish/utilite/request.dart' as request;
 
 class Home extends StatefulWidget {
   @override
@@ -7,33 +8,60 @@ class Home extends StatefulWidget {
 }
 
 class MovieState extends State<Home> {
+
+  var _banners = [];
+
   @override
   void initState() {
     super.initState();
     print("Home init");
+    this._requestData();
+  }
+
+  Widget _requestData() {
+    request.get("/v1/home/v5/", (response){
+    
+      print(response);
+      
+      var data = response['data'];
+
+      setState(() {
+        _banners = data["banners"];
+      });
+      
+    }, (error){
+      print(error);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    Widget listView = new ListView.builder(
-      padding: EdgeInsets.fromLTRB(0, 88, 0, 15),
-      itemCount: 10,
-      itemBuilder: (context, i) => renderRow(i),
-    );
-    return new Stack(
-      children: <Widget>[
-        listView,
-        new Container(
-          color: Colors.green,
-          height: 88,
+    return new MaterialApp(
+      theme: new ThemeData(primaryColor: Color(0xffffffff)),
+      home: new Scaffold(
+        appBar: new AppBar(
+          elevation: 0.5,
+          title: Text('爆英语'),
+          actions: <Widget>[
+            IconButton(icon: Image.asset('assets/images/main_mycourse.png', width: 16, height: 18,), onPressed: () {}),
+            IconButton(icon: Image.asset('assets/images/main_message.png', width: 18, height: 18,), onPressed: () {}),
+          ],
         ),
-      ],
+        body: Container(
+          color: Colors.white,
+          child: new ListView.builder(
+            padding: EdgeInsets.fromLTRB(0, 0, 0, 15),
+            itemCount: 10,
+            itemBuilder: (context, i) => renderRow(i),
+          ),
+        )
+      ),
     );
   }
 
   Widget _swiperBuilder(BuildContext context, int index) {
     return (Image.network(
-      "http://pic37.photophoto.cn/20151103/0011034499985505_b.jpg",
+      _banners[index]["list_image"],
       fit: BoxFit.fill,
     ));
   }
@@ -46,27 +74,25 @@ class MovieState extends State<Home> {
       double height = (screenWidth - 30) * 145.0 / 345.0;
 
       return new Container(
-        height: height,
-        margin: new EdgeInsets.fromLTRB(15, 15, 15, 0),
-        child: new ClipRRect(
-          borderRadius: BorderRadius.all(new Radius.circular(6)),
-          child: Swiper(
-            itemBuilder: _swiperBuilder,
-            itemCount: 3,
-            pagination: new SwiperPagination(
-              alignment: Alignment.bottomRight,
-              builder: DotSwiperPaginationBuilder(
-                color: Colors.white30,
-                activeColor: Colors.white,
-              )
+          height: height,
+          margin: new EdgeInsets.fromLTRB(15, 15, 15, 0),
+          child: new ClipRRect(
+            borderRadius: BorderRadius.all(new Radius.circular(6)),
+            child: Swiper(
+              itemBuilder: _swiperBuilder,
+              itemCount: _banners.length,
+              pagination: new SwiperPagination(
+                  alignment: Alignment.bottomRight,
+                  builder: DotSwiperPaginationBuilder(
+                    color: Colors.white30,
+                    activeColor: Colors.white,
+                  )),
+              scrollDirection: Axis.horizontal,
+              autoplay: true,
+              autoplayDelay: 5000,
+              onTap: (index) => print('点击了第$index个'),
             ),
-            scrollDirection: Axis.horizontal,
-            autoplay: true,
-            autoplayDelay: 5000,
-            onTap: (index) => print('点击了第$index个'),
-          ),
-        )
-      );
+          ));
     }
     // draw
     if (i == 1) {
