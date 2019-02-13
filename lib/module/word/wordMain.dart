@@ -28,6 +28,7 @@ class RandomWordsState extends State<RandomWords> {
     return new Scaffold(
       appBar: new AppBar(
         title: new Text('word'),
+        elevation: 0.5,
         actions: <Widget>[
           new IconButton(
             icon: const Icon(Icons.list),

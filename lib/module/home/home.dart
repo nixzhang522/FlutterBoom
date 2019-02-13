@@ -1,15 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:boomenglish/utilite/request.dart' as request;
+import 'package:boomenglish/module/home/courseWidget.dart';
 
 class Home extends StatefulWidget {
   @override
-  MovieState createState() => new MovieState();
+  HomeState createState() => new HomeState();
 }
 
-class MovieState extends State<Home> {
-
+class HomeState extends State<Home> {
   var _banners = [];
+  var _hotCourses = [];
+  var _recommendCourses = [];
+  var _module = [
+    {"icon": "assets/images/main_video.png", "title": "新闻资讯"},
+    {"icon": "assets/images/main_audio.png", "title": "音频资讯"},
+    {"icon": "assets/images/main_story.png", "title": "故事对白"},
+    {"icon": "assets/images/main_dub.png", "title": "最新配音"},
+  ];
 
   @override
   void initState() {
@@ -18,16 +26,16 @@ class MovieState extends State<Home> {
     this._requestData();
   }
 
-  Widget _requestData() {
-    request.get("/v1/home/v5/", (response){
-
+  void _requestData() {
+    request.get("/v1/home/v5/", (response) {
       var data = response['data'];
 
       setState(() {
         _banners = data["banners"];
+        _hotCourses = data["hot_scenarios"];
+        _recommendCourses = data["recommended_scenarios"];
       });
-      
-    }, (error){
+    }, (error) {
       print(error);
     });
   }
@@ -37,23 +45,34 @@ class MovieState extends State<Home> {
     return new MaterialApp(
       theme: new ThemeData(primaryColor: Color(0xffffffff)),
       home: new Scaffold(
-        appBar: new AppBar(
-          elevation: 0.5,
-          title: Text('爆英语'),
-          actions: <Widget>[
-            IconButton(icon: Image.asset('assets/images/main_mycourse.png', width: 16, height: 18,), onPressed: () {}),
-            IconButton(icon: Image.asset('assets/images/main_message.png', width: 18, height: 18,), onPressed: () {}),
-          ],
-        ),
-        body: Container(
-          color: Colors.white,
-          child: new ListView.builder(
-            padding: EdgeInsets.fromLTRB(0, 0, 0, 15),
-            itemCount: 10,
-            itemBuilder: (context, i) => renderRow(i),
+          appBar: new AppBar(
+            elevation: 0.5,
+            title: Text('爆英语'),
+            actions: <Widget>[
+              IconButton(
+                  icon: Image.asset(
+                    'assets/images/main_mycourse.png',
+                    width: 16,
+                    height: 18,
+                  ),
+                  onPressed: () {}),
+              IconButton(
+                  icon: Image.asset(
+                    'assets/images/main_message.png',
+                    width: 18,
+                    height: 18,
+                  ),
+                  onPressed: () {}),
+            ],
           ),
-        )
-      ),
+          body: Container(
+            color: Colors.white,
+            child: new ListView.builder(
+              padding: EdgeInsets.fromLTRB(0, 0, 0, 15),
+              itemCount: 6 + _recommendCourses.length,
+              itemBuilder: (context, i) => renderRow(i),
+            ),
+          )),
     );
   }
 
@@ -143,7 +162,7 @@ class MovieState extends State<Home> {
             crossAxisSpacing: 10,
             childAspectRatio: ratio,
           ),
-          itemCount: 4,
+          itemCount: _module.length,
           itemBuilder: (context, i) {
             return new Container(
               decoration: BoxDecoration(
@@ -153,13 +172,11 @@ class MovieState extends State<Home> {
               child: new Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  new Image.asset('assets/images/main_video.png',
-                      width: 27, height: 27),
+                  new Image.asset(_module[i]["icon"], width: 27, height: 27),
                   new Container(
-                    width: 10,
-                    height: 10,
+                    margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                    child: Text(_module[i]["title"]),
                   ),
-                  new Text('视频资讯')
                 ],
               ),
             );
@@ -212,7 +229,7 @@ class MovieState extends State<Home> {
             crossAxisSpacing: 10,
             childAspectRatio: ratio,
           ),
-          itemCount: 4,
+          itemCount: _hotCourses.length,
           itemBuilder: (context, i) {
             return new Container(
               margin: EdgeInsets.fromLTRB(5, 5, 5, 0),
@@ -239,15 +256,15 @@ class MovieState extends State<Home> {
                         top: Radius.circular(5),
                       ),
                       image: DecorationImage(
-                          image: NetworkImage(
-                              "http://pic37.photophoto.cn/20151103/0011034499985505_b.jpg"),
+                          image: NetworkImage(_hotCourses[i]["list_image"]),
                           fit: BoxFit.cover),
                     ),
                   ),
                   Container(
                     padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: Text(
-                      "爆英语事务所",
+                      _hotCourses[i]["name_zh"],
+                      maxLines: 1,
                       textAlign: TextAlign.left,
                       style: TextStyle(
                         fontSize: 15,
@@ -258,7 +275,7 @@ class MovieState extends State<Home> {
                   Container(
                     padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
                     child: Text(
-                      "观看至第1集",
+                      "更新至第${_hotCourses[i]['episode_cnt']}集",
                       textAlign: TextAlign.left,
                       style: TextStyle(
                         fontSize: 11,
@@ -339,155 +356,18 @@ class MovieState extends State<Home> {
       );
     }
     // recommend course
-    return new Container(
-      height: 175.0,
-      padding: new EdgeInsets.fromLTRB(15, 15, 15, 0),
-      child: new Stack(
-        children: <Widget>[
-          new Container(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Container(
-                          padding: EdgeInsets.fromLTRB(16, 10, 0, 0),
-                          child: Text(
-                            "全年考研VIP全程班-英语",
-                            style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xff222626)),
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.fromLTRB(16, 4, 0, 0),
-                          child: Text(
-                            "更新至第1集",
-                            style: TextStyle(
-                                fontSize: 13, color: Color(0xff808080)),
-                          ),
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Container(
-                              margin: EdgeInsets.fromLTRB(16, 4, 0, 0),
-                              height: 18,
-                              padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                              color: Color(0xfffcd433),
-                              child: Text(
-                                "外教",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontSize: 11, color: Color(0xff222626)),
-                              ),
-                            ),
-                            Container(
-                              margin: EdgeInsets.fromLTRB(16, 4, 0, 0),
-                              height: 18,
-                              padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                              color: Color(0xfffcd433),
-                              child: Text(
-                                "精品",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontSize: 11, color: Color(0xff222626)),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    Container(
-                      width: 123,
-                      height: 94,
-                      margin: EdgeInsets.fromLTRB(0, 10, 16, 0),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.rectangle,
-                        borderRadius: BorderRadius.all(Radius.circular(7)),
-                        image: DecorationImage(
-                            image: NetworkImage(
-                                "http://pic37.photophoto.cn/20151103/0011034499985505_b.jpg"),
-                            fit: BoxFit.cover),
-                      ),
-                    )
-                  ],
-                ),
-                Container(
-                  color: Color(0xfff8f8f8),
-                  height: 42,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Container(
-                        padding: EdgeInsets.fromLTRB(16, 0, 0, 0),
-                        child: Row(
-                          children: <Widget>[
-                            ClipOval(
-                              child: SizedBox(
-                                width: 32.0,
-                                height: 32.0,
-                                child: Image(
-                                  image: NetworkImage(
-                                      "http://pic37.photophoto.cn/20151103/0011034499985505_b.jpg"),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                              child: Text(
-                                "Vica",
-                                style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w700,
-                                    color: Color(0xff222626)),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                      Container(
-                          padding: EdgeInsets.fromLTRB(0, 0, 16, 0),
-                          child: RichText(
-                            text: TextSpan(
-                                text: "RMB ",
-                                style: TextStyle(
-                                    color: Color(0xff222626),
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700),
-                                children: <TextSpan>[
-                                  TextSpan(
-                                      text: "1600",
-                                      style: TextStyle(
-                                          color: Color(0xff222626),
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w700))
-                                ]),
-                          ))
-                    ],
-                  ),
-                )
-              ],
-            ),
-            decoration: BoxDecoration(
-              color: Color(0xffffffff),
-              borderRadius: BorderRadius.all(new Radius.circular(6)),
-              boxShadow: <BoxShadow>[
-                new BoxShadow(
-                  color: const Color.fromRGBO(0, 0, 0, 0.1),
-                  offset: new Offset(0.0, 0.0),
-                  blurRadius: 5.0,
-                ),
-              ],
-            ),
-          )
-        ],
-      ),
+    var course = _recommendCourses[i - 6];
+    return CourseWidget(
+      courseId: course["id"].toString(),
+      courseName: course["name_zh"],
+      courseImage: course["list_image"],
+      courseEpisode: course["episode_cnt"].toString(),
+      coursePrice: "免费",
+      authorAvatar: course["user"]["avatar"],
+      authorNickname: course["user"]["nickname"],
+      onTap: (couseId) {
+        print(couseId);
+      },
     );
   }
 }

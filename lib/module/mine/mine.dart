@@ -13,6 +13,7 @@ class MovieState extends State<Mine> {
       home: new Scaffold(
         appBar: new AppBar(
           title: new Text("我的"),
+          elevation: 0.5,
         ),
         body: new Center(
           child: new Text('user center'),

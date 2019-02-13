@@ -22,9 +22,10 @@ void get(url, callback, fail) {
     
     print("Response status: ${response.statusCode}");
     //print("Response body: ${response.body}");
-    
+    Utf8Decoder decode = new Utf8Decoder();
+
     if (response.statusCode == 200) {
-      callback(jsonDecode(response.body));
+      callback(jsonDecode(decode.convert(response.bodyBytes)));
     }
     else {
       fail(response.reasonPhrase);
