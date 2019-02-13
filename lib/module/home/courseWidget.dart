@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 typedef void CourseOnTap(String courseId);
 
 class CourseWidget extends StatelessWidget {
-
   CourseWidget({
     this.courseId,
     this.courseName,
@@ -14,7 +13,7 @@ class CourseWidget extends StatelessWidget {
     this.coursePrice,
     this.onTap,
   });
-  
+
   final String courseId;
   final String courseName;
   final String courseImage;
@@ -29,7 +28,7 @@ class CourseWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        onTap(courseId);  
+        onTap(courseId);
       },
       child: new Container(
         height: 175.0,
@@ -143,22 +142,30 @@ class CourseWidget extends StatelessWidget {
                         ),
                         Container(
                             padding: EdgeInsets.fromLTRB(0, 0, 16, 0),
-                            child: RichText(
-                              text: TextSpan(
-                                  text: "RMB ",
-                                  style: TextStyle(
-                                      color: Color(0xff222626),
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700),
-                                  children: <TextSpan>[
-                                    TextSpan(
-                                        text: "1600",
+                            child: coursePrice == "免费"
+                                ? Text(
+                                    '免费',
+                                    style: TextStyle(
+                                        color: Color(0xff222626),
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700),
+                                  )
+                                : RichText(
+                                    text: TextSpan(
+                                        text: "RMB ",
                                         style: TextStyle(
                                             color: Color(0xff222626),
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w700))
-                                  ]),
-                            ))
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w700),
+                                        children: <TextSpan>[
+                                          TextSpan(
+                                              text: coursePrice,
+                                              style: TextStyle(
+                                                  color: Color(0xff222626),
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.w700))
+                                        ]),
+                                  ))
                       ],
                     ),
                   )
