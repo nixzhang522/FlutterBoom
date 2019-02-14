@@ -58,7 +58,7 @@ class CourseWidget extends StatelessWidget {
                           Container(
                             padding: EdgeInsets.fromLTRB(16, 4, 0, 0),
                             child: Text(
-                              "更新至第${courseEpisode}集",
+                              "更新至第$courseEpisode集",
                               style: TextStyle(
                                   fontSize: 13, color: Color(0xff808080)),
                             ),

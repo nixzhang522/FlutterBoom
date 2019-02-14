@@ -357,12 +357,30 @@ class HomeState extends State<Home> {
     }
     // recommend course
     var course = _recommendCourses[i - 6];
+    var pricing = course["pricing"];
+    var coursePrice = "免费";
+    if (pricing != null) {
+      var product = pricing["product"];
+      if (product != null) {
+        var price = product["price"];
+        var salesPrice = product["sales_price"];
+        if (salesPrice != null) {
+          if (salesPrice > 0) {
+            coursePrice = "$salesPrice";
+          }
+        }
+        else {
+          coursePrice = "$price";
+        }
+      }
+    }
+
     return CourseWidget(
       courseId: course["id"].toString(),
       courseName: course["name_zh"],
       courseImage: course["list_image"],
       courseEpisode: course["episode_cnt"].toString(),
-      coursePrice: "免费",
+      coursePrice: coursePrice,
       authorAvatar: course["user"]["avatar"],
       authorNickname: course["user"]["nickname"],
       onTap: (couseId) {
