@@ -12,8 +12,11 @@ class CourseList extends StatefulWidget {
   CourseListState createState() => new CourseListState();
 }
 
-class CourseListState extends State<CourseList> {
+class CourseListState extends State<CourseList> with AutomaticKeepAliveClientMixin {
   var _courses = [];
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -74,6 +77,8 @@ class CourseListState extends State<CourseList> {
       authorNickname: course["user"]["nickname"],
       onTap: (couseId) {
         print(couseId);
+        // 跳转
+        // Navigator.push(context, new MaterialPageRoute(builder: (context) => new CourseMain()));
       },
     );
   }
