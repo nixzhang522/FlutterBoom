@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:boomenglish/utilite/request.dart' as request;
 import 'package:boomenglish/module/home/courseWidget.dart';
+
+import 'package:boomenglish/utilite/ZNRequestManager.dart';
+import 'package:boomenglish/utilite/ZNResultModel.dart';
 
 class CourseList extends StatefulWidget {
   CourseList({
@@ -12,7 +14,8 @@ class CourseList extends StatefulWidget {
   CourseListState createState() => new CourseListState();
 }
 
-class CourseListState extends State<CourseList> with AutomaticKeepAliveClientMixin {
+class CourseListState extends State<CourseList>
+    with AutomaticKeepAliveClientMixin {
   var _courses = [];
 
   @override
@@ -24,28 +27,25 @@ class CourseListState extends State<CourseList> with AutomaticKeepAliveClientMix
     this._requestData();
   }
 
-  void _requestData() {
-    request.get("/v1/scenario/catalogs/${this.widget.url}/", (response) {
-      var data = response['data'];
+  void _requestData() async {
+    ZNResultModel resultModel =
+        await ZNRequestManager.get("/v1/scenario/catalogs/${this.widget.url}/", {});
+    var data = resultModel.data['data'];
 
-      setState(() {
-        _courses = data["scenarios"];
-      });
-    }, (error) {
-      print(error);
+    setState(() {
+      _courses = data["scenarios"];
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return new Container(
-      color: Colors.white,
-      child: new ListView.builder(
-      padding: EdgeInsets.fromLTRB(0, 0, 0, 15),
-        itemCount: _courses.length,
-        itemBuilder: (context, i) => renderRow(i),
-      )
-    );
+        color: Colors.white,
+        child: new ListView.builder(
+          padding: EdgeInsets.fromLTRB(0, 0, 0, 15),
+          itemCount: _courses.length,
+          itemBuilder: (context, i) => renderRow(i),
+        ));
   }
 
   Widget renderRow(i) {

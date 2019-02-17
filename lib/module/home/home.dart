@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
-import 'package:boomenglish/utilite/request.dart' as request;
-import 'package:boomenglish/module/home/courseWidget.dart';
+import 'package:boomenglish/module/home/courseWidget.dart';  // course item
+
+import 'package:boomenglish/utilite/ZNRequestManager.dart';
+import 'package:boomenglish/utilite/ZNResultModel.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -22,22 +24,17 @@ class HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    print("Home init");
     this._requestData();
   }
 
-  void _requestData() {
-    request.get("/v1/home/v5/", (response) {
-      var data = response['data'];
-
-      setState(() {
+  void _requestData() async {
+    ZNResultModel resultModel = await ZNRequestManager.get("/v1/home/v5/", {});
+    var data = resultModel.data['data'];
+    setState(() {
         _banners = data["banners"];
         _hotCourses = data["hot_scenarios"];
         _recommendCourses = data["recommended_scenarios"];
       });
-    }, (error) {
-      print(error);
-    });
   }
 
   @override
