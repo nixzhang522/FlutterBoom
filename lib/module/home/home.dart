@@ -376,7 +376,7 @@ class HomeState extends State<Home> {
           if (salesPrice > 0) {
             coursePrice = "$salesPrice";
           }
-        } else {
+        } else if (price > 0) {
           coursePrice = "$price";
         }
       }
