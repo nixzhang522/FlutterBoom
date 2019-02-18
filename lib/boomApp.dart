@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:boomenglish/module/home/home.dart';
-import 'package:boomenglish/module/course/courseMain/courseMain.dart';
+import 'package:boomenglish/module/course/courseMain/course_main.dart';
 import 'package:boomenglish/module/word/wordMain.dart';
 import 'package:boomenglish/module/mine/mine.dart';
 

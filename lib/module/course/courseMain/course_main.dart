@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'courseList.dart';
+import 'course_list.dart';
 
 class CourseMain extends StatefulWidget {
   @override

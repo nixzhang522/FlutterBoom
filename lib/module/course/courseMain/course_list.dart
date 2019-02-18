@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:boomenglish/module/home/courseWidget.dart';
+import 'package:boomenglish/widget/course_widget.dart';
 
 import 'package:boomenglish/utilite/ZNRequestManager.dart';
 import 'package:boomenglish/utilite/ZNResultModel.dart';
+
+import 'package:boomenglish/module/course/courseDetail/course_detail.dart';
 
 class CourseList extends StatefulWidget {
   CourseList({
@@ -70,7 +72,7 @@ class CourseListState extends State<CourseList>
     return CourseWidget(
       courseId: course["id"].toString(),
       courseName: course["name_zh"],
-      courseImage: course["list_image"],
+      courseImage: course["list_image"] ?? "",
       courseEpisode: course["episode_cnt"].toString(),
       coursePrice: coursePrice,
       authorAvatar: course["user"]["avatar"],
@@ -78,7 +80,7 @@ class CourseListState extends State<CourseList>
       onTap: (couseId) {
         print(couseId);
         // 跳转
-        // Navigator.push(context, new MaterialPageRoute(builder: (context) => new CourseMain()));
+        Navigator.push(context, new MaterialPageRoute(builder: (context) => new CourseDetail()));
       },
     );
   }

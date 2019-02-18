@@ -86,7 +86,8 @@ class ZNRequestManager {
           ZNResultCode.errorHandleFunction(
               errorResponse.statusCode, error.message, noTip),
           false,
-          errorResponse.statusCode);
+          errorResponse.statusCode,
+          headers: response.headers);
     }
 
     // debug模式打印相关数据
@@ -107,12 +108,13 @@ class ZNRequestManager {
             headers: response.headers);
       }
     } catch (error) {
+      print(error.toString() + url);
       return new ZNResultModel(response.data, false, response.statusCode,
           headers: response.headers);
     }
     return new ZNResultModel(
         ZNResultCode.errorHandleFunction(response.statusCode, "", noTip),
         false,
-        response.statusCode, headers: response.headers);
+        response.statusCode);
   }
 }

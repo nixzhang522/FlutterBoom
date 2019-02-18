@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
-import 'package:boomenglish/module/home/courseWidget.dart'; // course item
+import 'package:boomenglish/widget/course_widget.dart';
 
 import 'package:boomenglish/utilite/ZNRequestManager.dart';
 import 'package:boomenglish/utilite/ZNResultModel.dart';
@@ -385,7 +385,7 @@ class HomeState extends State<Home> {
     return CourseWidget(
       courseId: course.id.toString(),
       courseName: course.nameZh,
-      courseImage: course.listImage,
+      courseImage: course.listImage ?? "",
       courseEpisode: course.episodeCnt.toString(),
       coursePrice: coursePrice,
       authorAvatar: course.user.avatar,
