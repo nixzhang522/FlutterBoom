@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
-import 'package:boomenglish/module/home/courseWidget.dart';  // course item
+import 'package:boomenglish/module/home/courseWidget.dart'; // course item
 
 import 'package:boomenglish/utilite/ZNRequestManager.dart';
 import 'package:boomenglish/utilite/ZNResultModel.dart';
+
+import 'package:boomenglish/model/homeBanner.dart';
+import 'package:boomenglish/model/course.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -11,9 +14,9 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
-  var _banners = [];
-  var _hotCourses = [];
-  var _recommendCourses = [];
+  List _banners = [];
+  List _hotCourses = [];
+  List _recommendCourses = [];
   var _module = [
     {"icon": "assets/images/main_video.png", "title": "新闻资讯"},
     {"icon": "assets/images/main_audio.png", "title": "音频资讯"},
@@ -30,11 +33,16 @@ class HomeState extends State<Home> {
   void _requestData() async {
     ZNResultModel resultModel = await ZNRequestManager.get("/v1/home/v5/", {});
     var data = resultModel.data['data'];
+    
+    List banners = data["banners"].map((m) => new HomeBanner.fromJson(m)).toList();
+    List hotCourses = data["hot_scenarios"].map((m) => new Course.fromJson(m)).toList();
+    List recommendCourses = data["recommended_scenarios"].map((m) => new Course.fromJson(m)).toList();
+
     setState(() {
-        _banners = data["banners"];
-        _hotCourses = data["hot_scenarios"];
-        _recommendCourses = data["recommended_scenarios"];
-      });
+      _banners = banners;
+      _hotCourses = hotCourses;
+      _recommendCourses = recommendCourses;
+    });
   }
 
   @override
@@ -74,8 +82,10 @@ class HomeState extends State<Home> {
   }
 
   Widget _swiperBuilder(BuildContext context, int index) {
+
+    HomeBanner homeBanner = _banners[index];
     return (Image.network(
-      _banners[index]["list_image"],
+      homeBanner.listImage,
       fit: BoxFit.fill,
     ));
   }
@@ -228,6 +238,7 @@ class HomeState extends State<Home> {
           ),
           itemCount: _hotCourses.length,
           itemBuilder: (context, i) {
+            Course course = _hotCourses[i];
             return new Container(
               margin: EdgeInsets.fromLTRB(5, 5, 5, 0),
               decoration: BoxDecoration(
@@ -253,14 +264,14 @@ class HomeState extends State<Home> {
                         top: Radius.circular(5),
                       ),
                       image: DecorationImage(
-                          image: NetworkImage(_hotCourses[i]["list_image"]),
+                          image: NetworkImage(course.listImage),
                           fit: BoxFit.cover),
                     ),
                   ),
                   Container(
                     padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: Text(
-                      _hotCourses[i]["name_zh"],
+                      course.nameZh,
                       maxLines: 1,
                       textAlign: TextAlign.left,
                       style: TextStyle(
@@ -272,7 +283,7 @@ class HomeState extends State<Home> {
                   Container(
                     padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
                     child: Text(
-                      "更新至第${_hotCourses[i]['episode_cnt']}集",
+                      "更新至第${course.episodeCnt}集",
                       textAlign: TextAlign.left,
                       style: TextStyle(
                         fontSize: 11,
@@ -353,33 +364,32 @@ class HomeState extends State<Home> {
       );
     }
     // recommend course
-    var course = _recommendCourses[i - 6];
-    var pricing = course["pricing"];
+    Course course = _recommendCourses[i - 6];
+    var pricing = course.pricing;
     var coursePrice = "免费";
     if (pricing != null) {
-      var product = pricing["product"];
+      var product = pricing.product;
       if (product != null) {
-        var price = product["price"];
-        var salesPrice = product["sales_price"];
+        var price = product.price;
+        var salesPrice = product.salesPrice;
         if (salesPrice != null) {
           if (salesPrice > 0) {
             coursePrice = "$salesPrice";
           }
-        }
-        else {
+        } else {
           coursePrice = "$price";
         }
       }
     }
 
     return CourseWidget(
-      courseId: course["id"].toString(),
-      courseName: course["name_zh"],
-      courseImage: course["list_image"],
-      courseEpisode: course["episode_cnt"].toString(),
+      courseId: course.id.toString(),
+      courseName: course.nameZh,
+      courseImage: course.listImage,
+      courseEpisode: course.episodeCnt.toString(),
       coursePrice: coursePrice,
-      authorAvatar: course["user"]["avatar"],
-      authorNickname: course["user"]["nickname"],
+      authorAvatar: course.user.avatar,
+      authorNickname: course.user.nickname,
       onTap: (couseId) {
         print(couseId);
       },
