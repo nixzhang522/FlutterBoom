@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'homeBanner.g.dart';
+part 'home_banner.g.dart';
 
 @JsonSerializable()
 class HomeBanner extends Object {

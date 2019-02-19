@@ -77,10 +77,8 @@ class CourseListState extends State<CourseList>
       coursePrice: coursePrice,
       authorAvatar: course["user"]["avatar"],
       authorNickname: course["user"]["nickname"],
-      onTap: (couseId) {
-        print(couseId);
-        // 跳转
-        Navigator.push(context, new MaterialPageRoute(builder: (context) => new CourseDetail()));
+      onTap: (scenarioId) {
+        Navigator.push(context, new MaterialPageRoute(builder: (context) => new CourseDetail(scenarioId: scenarioId,)));
       },
     );
   }

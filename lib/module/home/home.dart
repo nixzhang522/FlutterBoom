@@ -5,8 +5,10 @@ import 'package:boomenglish/widget/course_widget.dart';
 import 'package:boomenglish/utilite/ZNRequestManager.dart';
 import 'package:boomenglish/utilite/ZNResultModel.dart';
 
-import 'package:boomenglish/model/homeBanner.dart';
+import 'package:boomenglish/model/home_banner.dart';
 import 'package:boomenglish/model/course.dart';
+
+import 'package:boomenglish/module/course/courseDetail/course_detail.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -390,8 +392,8 @@ class HomeState extends State<Home> {
       coursePrice: coursePrice,
       authorAvatar: course.user.avatar,
       authorNickname: course.user.nickname,
-      onTap: (couseId) {
-        print(couseId);
+      onTap: (scenarioId) {
+        Navigator.push(context, new MaterialPageRoute(builder: (context) => new CourseDetail(scenarioId: scenarioId,)));
       },
     );
   }
