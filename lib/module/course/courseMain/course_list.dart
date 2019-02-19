@@ -4,6 +4,8 @@ import 'package:boomenglish/widget/course_widget.dart';
 import 'package:boomenglish/utilite/ZNRequestManager.dart';
 import 'package:boomenglish/utilite/ZNResultModel.dart';
 
+import 'package:boomenglish/model/course.dart';
+
 import 'package:boomenglish/module/course/courseDetail/course_detail.dart';
 
 class CourseList extends StatefulWidget {
@@ -30,12 +32,14 @@ class CourseListState extends State<CourseList>
   }
 
   void _requestData() async {
-    ZNResultModel resultModel =
-        await ZNRequestManager.get("/v1/scenario/catalogs/${this.widget.url}/", {});
+    ZNResultModel resultModel = await ZNRequestManager.get(
+        "/v1/scenario/catalogs/${this.widget.url}/", {});
     var data = resultModel.data['data'];
+    List courses =
+        data["scenarios"].map((m) => new Course.fromJson(m)).toList();
 
     setState(() {
-      _courses = data["scenarios"];
+      _courses = courses;
     });
   }
 
@@ -51,34 +55,16 @@ class CourseListState extends State<CourseList>
   }
 
   Widget renderRow(i) {
-    var course = _courses[i];
-    var pricing = course["pricing"];
-    var coursePrice = "免费";
-    if (pricing != null) {
-      var product = pricing["product"];
-      if (product != null) {
-        var price = product["price"];
-        var salesPrice = product["sales_price"];
-        if (salesPrice != null) {
-          if (salesPrice > 0) {
-            coursePrice = "$salesPrice";
-          }
-        } else if (price > 0) {
-          coursePrice = "$price";
-        }
-      }
-    }
-
+    Course course = _courses[i];
     return CourseWidget(
-      courseId: course["id"].toString(),
-      courseName: course["name_zh"],
-      courseImage: course["list_image"] ?? "",
-      courseEpisode: course["episode_cnt"].toString(),
-      coursePrice: coursePrice,
-      authorAvatar: course["user"]["avatar"],
-      authorNickname: course["user"]["nickname"],
+      course: course,
       onTap: (scenarioId) {
-        Navigator.push(context, new MaterialPageRoute(builder: (context) => new CourseDetail(scenarioId: scenarioId,)));
+        Navigator.push(
+            context,
+            new MaterialPageRoute(
+                builder: (context) => new CourseDetail(
+                      scenarioId: scenarioId,
+                    )));
       },
     );
   }

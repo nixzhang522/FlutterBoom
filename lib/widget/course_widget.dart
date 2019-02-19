@@ -1,34 +1,68 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
+import 'package:boomenglish/model/course.dart';
 
 typedef void CourseOnTap(String courseId);
 
 class CourseWidget extends StatelessWidget {
   CourseWidget({
-    this.courseId,
-    this.courseName,
-    this.courseImage,
-    this.courseEpisode,
-    this.authorAvatar,
-    this.authorNickname,
-    this.coursePrice,
+    this.course,
     this.onTap,
   });
 
-  final String courseId;
-  final String courseName;
-  final String courseImage;
-  final String courseEpisode;
-  final String authorAvatar;
-  final String authorNickname;
-  final String coursePrice;
+  final Course course;
 
   final CourseOnTap onTap;
 
+  Widget tagsWidget() {
+    List<Widget> tags = [];
+    Widget tagsRow;
+
+    int count = course.tags.length > 2 ? 2 : course.tags.length;
+    for (var i = 0; i < count; i++) {
+      var item = course.tags[i];
+      tags.add(Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(1)),
+            color: Color(0xfffcd433)),
+        margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
+        padding: EdgeInsets.fromLTRB(8, 1, 8, 1),
+        child: Text(
+          item.nameZh,
+          style: TextStyle(fontSize: 11, color: Color(0xff222626)),
+        ),
+      ));
+    }
+    tagsRow = Container(
+      margin: EdgeInsets.fromLTRB(15, 8, 15, 0),
+      child: Row(children: tags),
+    );
+    return tagsRow;
+  }
+
   @override
   Widget build(BuildContext context) {
+    var pricing = course.pricing;
+    var coursePrice = "免费";
+    if (pricing != null) {
+      var product = pricing.product;
+      if (product != null) {
+        var price = product.price;
+        var salesPrice = product.salesPrice;
+        if (salesPrice != null) {
+          if (salesPrice > 0) {
+            coursePrice = "$salesPrice";
+          }
+        } else if (price > 0) {
+          coursePrice = "$price";
+        }
+      }
+    }
+
     return GestureDetector(
       onTap: () {
-        onTap(courseId);
+        onTap(course.id.toString());
       },
       child: new Container(
         height: 175.0,
@@ -36,73 +70,67 @@ class CourseWidget extends StatelessWidget {
         child: new Stack(
           children: <Widget>[
             new Container(
+              decoration: BoxDecoration(
+                color: Color(0xffffffff),
+                borderRadius: BorderRadius.all(new Radius.circular(6)),
+                boxShadow: <BoxShadow>[
+                  new BoxShadow(
+                    color: const Color.fromRGBO(0, 0, 0, 0.1),
+                    offset: new Offset(0.0, 0.0),
+                    blurRadius: 5.0,
+                  ),
+                ],
+              ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Container(
-                            padding: EdgeInsets.fromLTRB(16, 10, 0, 0),
-                            child: Text(
-                              courseName,
-                              style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w700,
-                                  color: Color(0xff222626)),
-                            ),
-                          ),
-                          Container(
-                            padding: EdgeInsets.fromLTRB(16, 4, 0, 0),
-                            child: Text(
-                              "更新至第$courseEpisode集",
-                              style: TextStyle(
-                                  fontSize: 13, color: Color(0xff808080)),
-                            ),
-                          ),
-                          Row(
-                            children: <Widget>[
-                              Container(
-                                margin: EdgeInsets.fromLTRB(16, 4, 0, 0),
-                                height: 18,
-                                padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                                color: Color(0xfffcd433),
-                                child: Text(
-                                  "外教",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: 11, color: Color(0xff222626)),
-                                ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Container(
+                              padding: EdgeInsets.fromLTRB(16, 10, 10, 0),
+                              child: Text(
+                                course.nameZh,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700,
+                                    color: Color(0xff222626)),
                               ),
-                              Container(
-                                margin: EdgeInsets.fromLTRB(16, 4, 0, 0),
-                                height: 18,
-                                padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                                color: Color(0xfffcd433),
-                                child: Text(
-                                  "精品",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: 11, color: Color(0xff222626)),
-                                ),
+                            ),
+                            Container(
+                              padding: EdgeInsets.fromLTRB(16, 4, 0, 0),
+                              child: Text(
+                                "更新至第${course.episodeCnt}集",
+                                style: TextStyle(
+                                    fontSize: 13, color: Color(0xff808080)),
                               ),
-                            ],
-                          ),
-                        ],
+                            ),
+                            tagsWidget(),
+                          ],
+                        ),
                       ),
                       Container(
                         width: 123,
                         height: 94,
                         margin: EdgeInsets.fromLTRB(0, 10, 16, 0),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.rectangle,
-                          borderRadius: BorderRadius.all(Radius.circular(7)),
-                          image: DecorationImage(
-                              image: NetworkImage(courseImage),
-                              fit: BoxFit.cover),
+                        child: ClipRRect(
+                          child: CachedNetworkImage(
+                            fit: BoxFit.cover,
+                            imageUrl: course.listImage ?? "",
+                            placeholder: (context, url) =>
+                              Image.asset("assets/images/placeholder_course.png"),
+                            errorWidget: (context, url, error) =>
+                              Icon(Icons.error),
+                          ),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(7),
+                          ),
                         ),
                       )
                     ],
@@ -122,7 +150,8 @@ class CourseWidget extends StatelessWidget {
                                   width: 32.0,
                                   height: 32.0,
                                   child: Image(
-                                    image: NetworkImage(authorAvatar),
+                                    image:
+                                        NetworkImage(course.user.avatar ?? ""),
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -130,7 +159,7 @@ class CourseWidget extends StatelessWidget {
                               Padding(
                                 padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
                                 child: Text(
-                                  authorNickname,
+                                  course.user.nickname,
                                   style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w700,
@@ -169,17 +198,6 @@ class CourseWidget extends StatelessWidget {
                       ],
                     ),
                   )
-                ],
-              ),
-              decoration: BoxDecoration(
-                color: Color(0xffffffff),
-                borderRadius: BorderRadius.all(new Radius.circular(6)),
-                boxShadow: <BoxShadow>[
-                  new BoxShadow(
-                    color: const Color.fromRGBO(0, 0, 0, 0.1),
-                    offset: new Offset(0.0, 0.0),
-                    blurRadius: 5.0,
-                  ),
                 ],
               ),
             )

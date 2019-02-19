@@ -35,10 +35,14 @@ class HomeState extends State<Home> {
   void _requestData() async {
     ZNResultModel resultModel = await ZNRequestManager.get("/v1/home/v5/", {});
     var data = resultModel.data['data'];
-    
-    List banners = data["banners"].map((m) => new HomeBanner.fromJson(m)).toList();
-    List hotCourses = data["hot_scenarios"].map((m) => new Course.fromJson(m)).toList();
-    List recommendCourses = data["recommended_scenarios"].map((m) => new Course.fromJson(m)).toList();
+
+    List banners =
+        data["banners"].map((m) => new HomeBanner.fromJson(m)).toList();
+    List hotCourses =
+        data["hot_scenarios"].map((m) => new Course.fromJson(m)).toList();
+    List recommendCourses = data["recommended_scenarios"]
+        .map((m) => new Course.fromJson(m))
+        .toList();
 
     setState(() {
       _banners = banners;
@@ -84,7 +88,6 @@ class HomeState extends State<Home> {
   }
 
   Widget _swiperBuilder(BuildContext context, int index) {
-
     HomeBanner homeBanner = _banners[index];
     return (Image.network(
       homeBanner.listImage,
@@ -367,33 +370,15 @@ class HomeState extends State<Home> {
     }
     // recommend course
     Course course = _recommendCourses[i - 6];
-    var pricing = course.pricing;
-    var coursePrice = "免费";
-    if (pricing != null) {
-      var product = pricing.product;
-      if (product != null) {
-        var price = product.price;
-        var salesPrice = product.salesPrice;
-        if (salesPrice != null) {
-          if (salesPrice > 0) {
-            coursePrice = "$salesPrice";
-          }
-        } else if (price > 0) {
-          coursePrice = "$price";
-        }
-      }
-    }
-
     return CourseWidget(
-      courseId: course.id.toString(),
-      courseName: course.nameZh,
-      courseImage: course.listImage ?? "",
-      courseEpisode: course.episodeCnt.toString(),
-      coursePrice: coursePrice,
-      authorAvatar: course.user.avatar,
-      authorNickname: course.user.nickname,
+      course: course,
       onTap: (scenarioId) {
-        Navigator.push(context, new MaterialPageRoute(builder: (context) => new CourseDetail(scenarioId: scenarioId,)));
+        Navigator.push(
+            context,
+            new MaterialPageRoute(
+                builder: (context) => new CourseDetail(
+                      scenarioId: scenarioId,
+                    )));
       },
     );
   }
