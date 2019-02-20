@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:boomenglish/widget/teacher.dart';
 
+import 'package:cached_network_image/cached_network_image.dart';
+
+import 'package:boomenglish/widget/teacher.dart';
+import 'course_descriptions.dart';
 import 'package:boomenglish/module/course/courseMain/course_list.dart';
+
+import 'package:boomenglish/utilite/ZNRequestManager.dart';
+import 'package:boomenglish/utilite/ZNResultModel.dart';
+import 'package:boomenglish/model/course.dart';
 
 class CourseDetail extends StatefulWidget {
   CourseDetail({
@@ -18,6 +25,8 @@ class CourseDetailState extends State<CourseDetail>
     with SingleTickerProviderStateMixin {
   TabController _tabController;
   List<String> tabList;
+  List _descriptions = [];
+  Course _course;
 
   @override
   void initState() {
@@ -27,6 +36,8 @@ class CourseDetailState extends State<CourseDetail>
       length: tabList.length,
       vsync: this,
     );
+
+    _requestData();
   }
 
   @override
@@ -39,6 +50,20 @@ class CourseDetailState extends State<CourseDetail>
     tabList = ['详情', '课程', '评价'];
   }
 
+  void _requestData() async {
+    ZNResultModel resultModel = await ZNRequestManager.get(
+        "/v1/scenario/scenario/${this.widget.scenarioId}/", {});
+    var data = resultModel.data['data'];
+    Course course = Course.fromJson(data["scenario"]);
+    var product_info = data["product_info"];
+    var descriptions = product_info["descriptions"];
+
+    setState(() {
+      _course = course;
+      _descriptions = descriptions;
+    });
+  }
+
   Widget courseInfo() {
     double width = MediaQuery.of(context).size.width;
     double height = width * 9.0 / 16.0;
@@ -48,10 +73,12 @@ class CourseDetailState extends State<CourseDetail>
         Container(
             width: width,
             height: height,
-            child: Image(
-              image: NetworkImage(
-                  "https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=1826443249,4206319606&fm=26&gp=0.jpg"),
+            child: CachedNetworkImage(
               fit: BoxFit.cover,
+              imageUrl: _course.mainImage ?? "",
+              placeholder: (context, url) =>
+                  Image.asset("assets/images/placeholder_course.png"),
+              errorWidget: (context, url, error) => Icon(Icons.error),
             )),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -59,7 +86,7 @@ class CourseDetailState extends State<CourseDetail>
             Padding(
               padding: EdgeInsets.fromLTRB(15, 16, 15, 0),
               child: Text(
-                "全年英语考研全程班",
+                _course.nameZh,
                 style: TextStyle(
                     fontSize: 20,
                     color: Color(0xff222626),
@@ -76,8 +103,8 @@ class CourseDetailState extends State<CourseDetail>
             ),
           ],
         ),
-        describe("• 针对人群：大学生"),
-        describe("• 更新至第五集"),
+        describe("• 针对人群：${_course.targetAudience}"),
+        describe("• 更新至第${_course.episodeCnt}集"),
         describe("• 已有300人参与"),
         tagsWidget(),
         Container(
@@ -125,7 +152,9 @@ class CourseDetailState extends State<CourseDetail>
   Widget tagsWidget() {
     List<Widget> tags = [];
     Widget tagsRow;
-    for (var item in ["Allen", "名师"]) {
+    int count = _course.tags.length > 2 ? 2 : _course.tags.length;
+    for (var i = 0; i < count; i++) {
+      var item = _course.tags[i];
       tags.add(Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(1)),
@@ -133,7 +162,7 @@ class CourseDetailState extends State<CourseDetail>
         margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
         padding: EdgeInsets.fromLTRB(10, 4, 10, 4),
         child: Text(
-          item,
+          item.nameZh,
           style: TextStyle(fontSize: 11, color: Color(0xff222626)),
         ),
       ));
@@ -198,9 +227,9 @@ class CourseDetailState extends State<CourseDetail>
               controller: _tabController,
               children: tabList.map((item) {
                 if (item == "详情") {
-                  return Container(
-                    margin: EdgeInsets.fromLTRB(15, 0, 15, 0),
-                    color: Colors.green,
+                  return CourseDescriptions(
+                    width: width,
+                    descriptions: _descriptions,
                   );
                 } else if (item == "课程") {
                   return CourseList(
