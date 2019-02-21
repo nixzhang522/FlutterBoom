@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:boomenglish/model/course.dart';
 
 class TeacherWidget extends StatefulWidget {
+  TeacherWidget({this.user});
+  final User user;
+
   @override
   TeacherState createState() => new TeacherState();
 }
@@ -31,8 +35,7 @@ class TeacherState extends State<TeacherWidget> {
                     width: 37.0,
                     height: 37.0,
                     child: Image(
-                      image: NetworkImage(
-                          "https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=1144163211,2265871402&fm=26&gp=0.jpg"),
+                      image: NetworkImage(widget.user?.avatar ?? ""),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -43,14 +46,14 @@ class TeacherState extends State<TeacherWidget> {
                     children: <Widget>[
                       Padding(
                         padding: EdgeInsets.fromLTRB(13, 1, 10, 0),
-                        child: Text("MrYang杨老师",
+                        child: Text(widget.user?.nickname ?? "",
                             style: TextStyle(
                                 fontSize: 14, color: Color(0xff222626))),
                       ),
                       Padding(
                         padding: EdgeInsets.fromLTRB(13, 0, 10, 0),
                         child: Text(
-                          "新概念英语",
+                          widget.user?.signature ?? "",
                           style:
                               TextStyle(fontSize: 11, color: Color(0xff808080)),
                         ),
@@ -64,7 +67,7 @@ class TeacherState extends State<TeacherWidget> {
                   child: RaisedButton(
                       padding: EdgeInsets.all(0),
                       child: new Text(
-                        "+关注",
+                        widget.user?.isFollowing == true ? "已关注" : "+关注",
                         style:
                             TextStyle(color: Color(0xff222626), fontSize: 11),
                       ),
@@ -81,8 +84,7 @@ class TeacherState extends State<TeacherWidget> {
                           side: BorderSide(
                               color: Color(0xFF222626),
                               style: BorderStyle.solid,
-                              width: 1))
-                      ),
+                              width: 1))),
                 ),
               ],
             ),
@@ -90,7 +92,7 @@ class TeacherState extends State<TeacherWidget> {
           Padding(
             padding: EdgeInsets.fromLTRB(16, 12, 16, 0),
             child: Text(
-              "我是明明可以靠脸吃饭，偏偏不要脸的杨老师",
+              widget.user?.signature ?? "",
               style: TextStyle(fontSize: 12, color: Color(0xff8c8c8c)),
             ),
           )

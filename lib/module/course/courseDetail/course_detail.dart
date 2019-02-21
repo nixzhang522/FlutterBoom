@@ -71,14 +71,16 @@ class CourseDetailState extends State<CourseDetail>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Container(
+            color: Color(0xffe6e6e6),
             width: width,
             height: height,
             child: CachedNetworkImage(
               fit: BoxFit.cover,
-              imageUrl: _course.mainImage ?? "",
+              imageUrl: _course?.mainImage ?? "https://www.png",
               placeholder: (context, url) =>
-                  Image.asset("assets/images/placeholder_course.png"),
-              errorWidget: (context, url, error) => Icon(Icons.error),
+                  Image.asset("assets/images/placeholder_course.png", width: width, height: height, fit: BoxFit.cover),
+              errorWidget: (context, url, error) =>
+                  Image.asset("assets/images/placeholder_course.png", width: width, height: height, fit: BoxFit.cover,),
             )),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -86,7 +88,7 @@ class CourseDetailState extends State<CourseDetail>
             Padding(
               padding: EdgeInsets.fromLTRB(15, 16, 15, 0),
               child: Text(
-                _course.nameZh,
+                _course?.nameZh ?? "",
                 style: TextStyle(
                     fontSize: 20,
                     color: Color(0xff222626),
@@ -103,14 +105,14 @@ class CourseDetailState extends State<CourseDetail>
             ),
           ],
         ),
-        describe("• 针对人群：${_course.targetAudience}"),
-        describe("• 更新至第${_course.episodeCnt}集"),
+        describe("• 针对人群：${_course?.targetAudience ?? '所有人'}"),
+        describe("• 更新至第${_course?.episodeCnt ?? 1}集"),
         describe("• 已有300人参与"),
         tagsWidget(),
         Container(
           height: 110,
           padding: EdgeInsets.fromLTRB(16, 15, 16, 0),
-          child: TeacherWidget(),
+          child: TeacherWidget(user: _course?.user,),
         ),
         Container(
           color: new Color(0xffffffff),
@@ -152,20 +154,22 @@ class CourseDetailState extends State<CourseDetail>
   Widget tagsWidget() {
     List<Widget> tags = [];
     Widget tagsRow;
-    int count = _course.tags.length > 2 ? 2 : _course.tags.length;
-    for (var i = 0; i < count; i++) {
-      var item = _course.tags[i];
-      tags.add(Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(1)),
-            color: Color(0xfffcd433)),
-        margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
-        padding: EdgeInsets.fromLTRB(10, 4, 10, 4),
-        child: Text(
-          item.nameZh,
-          style: TextStyle(fontSize: 11, color: Color(0xff222626)),
-        ),
-      ));
+    if (_course != null) {
+      int count = _course.tags.length > 2 ? 2 : _course.tags.length;
+      for (var i = 0; i < count; i++) {
+        var item = _course.tags[i];
+        tags.add(Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(1)),
+              color: Color(0xfffcd433)),
+          margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
+          padding: EdgeInsets.fromLTRB(10, 4, 10, 4),
+          child: Text(
+            item.nameZh,
+            style: TextStyle(fontSize: 11, color: Color(0xff222626)),
+          ),
+        ));
+      }
     }
     tagsRow = Container(
       margin: EdgeInsets.fromLTRB(15, 8, 15, 0),

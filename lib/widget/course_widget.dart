@@ -122,15 +122,16 @@ class CourseWidget extends StatelessWidget {
                         child: ClipRRect(
                           child: CachedNetworkImage(
                             fit: BoxFit.cover,
-                            imageUrl: course.listImage ?? "",
-                            placeholder: (context, url) =>
-                              Image.asset("assets/images/placeholder_course.png"),
-                            errorWidget: (context, url, error) =>
-                              Icon(Icons.error),
+                            imageUrl: course.listImage ?? "https://www.png",
+                            placeholder: (context, url) => Image.asset(
+                                "assets/images/placeholder_course.png"),
+                            errorWidget: (context, url, error) => ClipRRect(
+                                  borderRadius: BorderRadius.circular(7.0),
+                                  child: Image.asset(
+                                      "assets/images/placeholder_course.png"),
+                                ),
                           ),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(7),
-                          ),
+                          borderRadius: BorderRadius.circular(7.0),
                         ),
                       )
                     ],
