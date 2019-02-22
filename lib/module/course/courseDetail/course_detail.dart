@@ -4,7 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:boomenglish/widget/teacher.dart';
 import 'course_descriptions.dart';
-import 'package:boomenglish/module/course/courseMain/course_list.dart';
+import 'package:boomenglish/widget/course_episode.dart';
 
 import 'package:boomenglish/utilite/ZNRequestManager.dart';
 import 'package:boomenglish/utilite/ZNResultModel.dart';
@@ -25,8 +25,9 @@ class CourseDetailState extends State<CourseDetail>
     with SingleTickerProviderStateMixin {
   TabController _tabController;
   List<String> tabList;
-  List _descriptions = [];
   Course _course;
+  List _descriptions = [];
+  List _sceneParents = [];
 
   @override
   void initState() {
@@ -55,12 +56,13 @@ class CourseDetailState extends State<CourseDetail>
         "/v1/scenario/scenario/${this.widget.scenarioId}/", {});
     var data = resultModel.data['data'];
     Course course = Course.fromJson(data["scenario"]);
-    var product_info = data["product_info"];
-    var descriptions = product_info["descriptions"];
+    var productInfo = data["product_info"];
+    var descriptions = productInfo["descriptions"];
 
     setState(() {
       _course = course;
       _descriptions = descriptions;
+      _sceneParents = [];
     });
   }
 
@@ -236,14 +238,15 @@ class CourseDetailState extends State<CourseDetail>
                     descriptions: _descriptions,
                   );
                 } else if (item == "课程") {
-                  return CourseList(
-                    url: "online_class",
+                  return EpisodeWidget(
+                    sceneParents: _sceneParents,
+                    onTap: (sceneId) => {},
                   );
                 } else {
                   return Container(
                     margin: EdgeInsets.fromLTRB(15, 0, 15, 0),
-                    color: Colors.yellow,
-                    child: Center(child: Text("评价")),
+                    color: Colors.white,
+                    child: Center(child: Text("暂无评价")),
                   );
                 }
               }).toList(),
