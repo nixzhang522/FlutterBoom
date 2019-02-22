@@ -278,6 +278,7 @@ class HomeState extends State<Home> {
                     child: Text(
                       course.nameZh,
                       maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.left,
                       style: TextStyle(
                         fontSize: 15,

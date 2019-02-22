@@ -22,6 +22,9 @@ class Course extends Object {
   @JsonKey(name: 'tags')
   List<Tags> tags;
 
+  @JsonKey(name: 'scene_parents')
+  List<SceneParentClass> sceneParents;
+
   @JsonKey(name: 'last_scene_parent')
   int lastSceneParent;
 
@@ -117,6 +120,128 @@ class Course extends Object {
 
   factory Course.fromJson(Map<String, dynamic> srcJson) =>
       _$CourseFromJson(srcJson);
+}
+
+@JsonSerializable()
+class SceneParentClass extends Object {
+  @JsonKey(name: 'type_name')
+  String typeName;
+
+  @JsonKey(name: 'default')
+  bool isDefault;
+
+  @JsonKey(name: 'scene_parents')
+  List<SceneParent> sceneParents;
+
+  SceneParentClass(
+    this.typeName,
+    this.isDefault,
+    this.sceneParents,
+  );
+
+  factory SceneParentClass.fromJson(Map<String, dynamic> srcJson) =>
+      _$SceneParentClassFromJson(srcJson);
+}
+
+@JsonSerializable()
+class SceneParent extends Object {
+  @JsonKey(name: 'id')
+  int id;
+
+  @JsonKey(name: 'course_name')
+  String courseName;
+
+  @JsonKey(name: 'main_and_minor_scenes')
+  List<Scene> mainAndMinorScenes;
+
+  @JsonKey(name: 'created_ts')
+  double createdTs;
+
+  @JsonKey(name: 'type')
+  String type;
+
+  @JsonKey(name: 'name_zh')
+  String nameZh;
+
+  @JsonKey(name: 'name_en')
+  String nameEn;
+
+  @JsonKey(name: 'list_image')
+  String listImage;
+
+  @JsonKey(name: 'tagline')
+  String tagline;
+
+  @JsonKey(name: 'comment_cnt')
+  int commentCnt;
+
+  @JsonKey(name: 'sortorder')
+  int sortorder;
+
+  @JsonKey(name: 'is_enabled')
+  bool isEnabled;
+
+  @JsonKey(name: 'is_trial')
+  bool isTrial;
+
+  @JsonKey(name: 'meta')
+  Meta meta;
+
+  @JsonKey(name: 'scenario')
+  int scenario;
+
+  SceneParent(
+    this.id,
+    this.courseName,
+    this.mainAndMinorScenes,
+    this.createdTs,
+    this.type,
+    this.nameZh,
+    this.nameEn,
+    this.listImage,
+    this.commentCnt,
+    this.sortorder,
+    this.isEnabled,
+    this.isTrial,
+    this.meta,
+    this.scenario,
+  );
+
+  factory SceneParent.fromJson(Map<String, dynamic> srcJson) =>
+      _$SceneParentFromJson(srcJson);
+}
+
+@JsonSerializable()
+class Scene extends Object {
+  @JsonKey(name: 'id')
+  int id;
+
+  @JsonKey(name: 'name')
+  String name;
+
+  @JsonKey(name: 'scene_type')
+  String sceneType;
+
+  @JsonKey(name: 'tagline')
+  String tagline;
+
+  @JsonKey(name: 'video_content_duration')
+  double videoContentDuration;
+
+  @JsonKey(name: 'practices')
+  List<dynamic> practices;
+
+  Scene(
+    this.id,
+    this.name,
+    this.sceneType,
+    this.tagline,
+    this.videoContentDuration,
+    this.practices,
+  );
+
+  factory Scene.fromJson(Map<String, dynamic> srcJson) =>
+      _$SceneFromJson(srcJson);
 }
 
 @JsonSerializable()

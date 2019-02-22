@@ -43,7 +43,12 @@ Course _$CourseFromJson(Map<String, dynamic> json) {
           : Meta.fromJson(json['meta'] as Map<String, dynamic>),
       json['sortorder'] as int,
       json['is_enabled'] as bool,
-      json['categories'] as List);
+      json['categories'] as List)
+    ..sceneParents = (json['scene_parents'] as List)
+        ?.map((e) => e == null
+            ? null
+            : SceneParentClass.fromJson(e as Map<String, dynamic>))
+        ?.toList();
 }
 
 Map<String, dynamic> _$CourseToJson(Course instance) => <String, dynamic>{
@@ -53,6 +58,7 @@ Map<String, dynamic> _$CourseToJson(Course instance) => <String, dynamic>{
       'pricing': instance.pricing,
       'user': instance.user,
       'tags': instance.tags,
+      'scene_parents': instance.sceneParents,
       'last_scene_parent': instance.lastSceneParent,
       'name_zh': instance.nameZh,
       'name_en': instance.nameEn,
@@ -74,6 +80,86 @@ Map<String, dynamic> _$CourseToJson(Course instance) => <String, dynamic>{
       'sortorder': instance.sortorder,
       'is_enabled': instance.isEnabled,
       'categories': instance.categories
+    };
+
+SceneParentClass _$SceneParentClassFromJson(Map<String, dynamic> json) {
+  return SceneParentClass(
+      json['type_name'] as String,
+      json['default'] as bool,
+      (json['scene_parents'] as List)
+          ?.map((e) => e == null
+              ? null
+              : SceneParent.fromJson(e as Map<String, dynamic>))
+          ?.toList());
+}
+
+Map<String, dynamic> _$SceneParentClassToJson(SceneParentClass instance) =>
+    <String, dynamic>{
+      'type_name': instance.typeName,
+      'default': instance.isDefault,
+      'scene_parents': instance.sceneParents
+    };
+
+SceneParent _$SceneParentFromJson(Map<String, dynamic> json) {
+  return SceneParent(
+      json['id'] as int,
+      json['course_name'] as String,
+      (json['main_and_minor_scenes'] as List)
+          ?.map((e) =>
+              e == null ? null : Scene.fromJson(e as Map<String, dynamic>))
+          ?.toList(),
+      (json['created_ts'] as num)?.toDouble(),
+      json['type'] as String,
+      json['name_zh'] as String,
+      json['name_en'] as String,
+      json['list_image'] as String,
+      json['comment_cnt'] as int,
+      json['sortorder'] as int,
+      json['is_enabled'] as bool,
+      json['is_trial'] as bool,
+      json['meta'] == null
+          ? null
+          : Meta.fromJson(json['meta'] as Map<String, dynamic>),
+      json['scenario'] as int)
+    ..tagline = json['tagline'] as String;
+}
+
+Map<String, dynamic> _$SceneParentToJson(SceneParent instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'course_name': instance.courseName,
+      'main_and_minor_scenes': instance.mainAndMinorScenes,
+      'created_ts': instance.createdTs,
+      'type': instance.type,
+      'name_zh': instance.nameZh,
+      'name_en': instance.nameEn,
+      'list_image': instance.listImage,
+      'tagline': instance.tagline,
+      'comment_cnt': instance.commentCnt,
+      'sortorder': instance.sortorder,
+      'is_enabled': instance.isEnabled,
+      'is_trial': instance.isTrial,
+      'meta': instance.meta,
+      'scenario': instance.scenario
+    };
+
+Scene _$SceneFromJson(Map<String, dynamic> json) {
+  return Scene(
+      json['id'] as int,
+      json['name'] as String,
+      json['scene_type'] as String,
+      json['tagline'] as String,
+      (json['video_content_duration'] as num)?.toDouble(),
+      json['practices'] as List);
+}
+
+Map<String, dynamic> _$SceneToJson(Scene instance) => <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'scene_type': instance.sceneType,
+      'tagline': instance.tagline,
+      'video_content_duration': instance.videoContentDuration,
+      'practices': instance.practices
     };
 
 Pricing _$PricingFromJson(Map<String, dynamic> json) {

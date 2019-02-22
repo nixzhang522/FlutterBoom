@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:boomenglish/model/course.dart';
 
 typedef void EpisodeOnTap(String sceneParentId);
 
@@ -10,10 +11,14 @@ class EpisodeWidget extends StatelessWidget {
   final List sceneParents;
   final EpisodeOnTap onTap;
 
+  List _sceneList = [];
+
   Widget renderRow(i) {
+    SceneParent sceneParent = _sceneList[i];
+
     return GestureDetector(
       onTap: () {
-        onTap("scene id");
+        onTap(sceneParent.id.toString());
       },
       child: new Container(
           height: 90.0,
@@ -29,7 +34,7 @@ class EpisodeWidget extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10)),
                   child: Center(
                     child: Text(
-                      "01",
+                      sceneParent.sortorder.toString() ?? "01",
                       style: TextStyle(fontSize: 11, color: Color(0xFF222626)),
                     ),
                   ),
@@ -42,7 +47,9 @@ class EpisodeWidget extends StatelessWidget {
                     Padding(
                       padding: EdgeInsets.fromLTRB(12, 23, 15, 0),
                       child: Text(
-                        "考研第一课",
+                        sceneParent.nameZh ?? "",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style:
                             TextStyle(color: Color(0xFF222626), fontSize: 15),
                       ),
@@ -50,7 +57,9 @@ class EpisodeWidget extends StatelessWidget {
                     Padding(
                       padding: EdgeInsets.fromLTRB(12, 4, 15, 0),
                       child: Text(
-                        "视频",
+                        sceneParent.tagline ?? "",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: Color(0xFF8C8C8C),
                           fontSize: 13,
@@ -76,11 +85,17 @@ class EpisodeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List tempArray = [];
+    for (SceneParentClass category in this.sceneParents) {
+      tempArray.addAll(category.sceneParents);
+    }
+    _sceneList = tempArray;
+
     return new Container(
         color: Colors.white,
         child: new ListView.builder(
           padding: EdgeInsets.all(0),
-          itemCount: 10,
+          itemCount: _sceneList.length,
           itemBuilder: (context, i) => renderRow(i),
         ));
   }

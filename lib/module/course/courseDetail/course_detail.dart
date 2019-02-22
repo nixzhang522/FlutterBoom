@@ -62,7 +62,7 @@ class CourseDetailState extends State<CourseDetail>
     setState(() {
       _course = course;
       _descriptions = descriptions;
-      _sceneParents = [];
+      _sceneParents = _course.sceneParents;
     });
   }
 
@@ -79,10 +79,17 @@ class CourseDetailState extends State<CourseDetail>
             child: CachedNetworkImage(
               fit: BoxFit.cover,
               imageUrl: _course?.mainImage ?? "https://www.png",
-              placeholder: (context, url) =>
-                  Image.asset("assets/images/placeholder_course.png", width: width, height: height, fit: BoxFit.cover),
-              errorWidget: (context, url, error) =>
-                  Image.asset("assets/images/placeholder_course.png", width: width, height: height, fit: BoxFit.cover,),
+              placeholder: (context, url) => Image.asset(
+                  "assets/images/placeholder_course.png",
+                  width: width,
+                  height: height,
+                  fit: BoxFit.cover),
+              errorWidget: (context, url, error) => Image.asset(
+                    "assets/images/placeholder_course.png",
+                    width: width,
+                    height: height,
+                    fit: BoxFit.cover,
+                  ),
             )),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -114,7 +121,9 @@ class CourseDetailState extends State<CourseDetail>
         Container(
           height: 110,
           padding: EdgeInsets.fromLTRB(16, 15, 16, 0),
-          child: TeacherWidget(user: _course?.user,),
+          child: TeacherWidget(
+            user: _course?.user,
+          ),
         ),
         Container(
           color: new Color(0xffffffff),
