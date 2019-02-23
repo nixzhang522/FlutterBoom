@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:boomenglish/widget/teacher.dart';
 import 'course_descriptions.dart';
 import 'package:boomenglish/widget/course_episode.dart';
+import 'package:boomenglish/widget/course_episode_content.dart';
 
 import 'package:boomenglish/utilite/ZNRequestManager.dart';
 import 'package:boomenglish/utilite/ZNResultModel.dart';
@@ -249,7 +250,9 @@ class CourseDetailState extends State<CourseDetail>
                 } else if (item == "课程") {
                   return EpisodeWidget(
                     sceneParents: _sceneParents,
-                    onTap: (sceneId) => {},
+                    onTap: (sceneId, scenes) {
+                      showSceneParentList(scenes);
+                    }
                   );
                 } else {
                   return Container(
@@ -266,4 +269,13 @@ class CourseDetailState extends State<CourseDetail>
       ),
     );
   }
+  
+  // func
+  void showSceneParentList(List scenes) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => EpisodeContentWidget(scenes: scenes,)
+    );
+  }
+
 }

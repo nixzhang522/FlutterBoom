@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:boomenglish/model/course.dart';
 
-typedef void EpisodeOnTap(String sceneParentId);
+typedef void EpisodeOnTap(String sceneParentId, List scenes);
 
 class EpisodeWidget extends StatelessWidget {
   EpisodeWidget({
@@ -18,7 +18,7 @@ class EpisodeWidget extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        onTap(sceneParent.id.toString());
+        onTap(sceneParent.id.toString(), sceneParent.mainAndMinorScenes);
       },
       child: new Container(
           height: 90.0,
