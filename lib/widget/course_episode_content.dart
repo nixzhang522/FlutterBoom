@@ -17,17 +17,17 @@ class EpisodeContentWidget extends StatelessWidget {
       onTap: () {
         onTap(scene.id.toString());
       },
-      child: new Container(
+      child: Container(
           height: 96.0,
           margin: EdgeInsets.fromLTRB(15, 8, 15, 8),
           padding: EdgeInsets.fromLTRB(0, 0, 27, 0),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: new BorderRadius.all(new Radius.circular(11)),
+            borderRadius: BorderRadius.all(Radius.circular(11)),
             boxShadow: <BoxShadow>[
-              new BoxShadow(
+              BoxShadow(
                 color: const Color.fromRGBO(0, 0, 0, 0.1),
-                offset: new Offset(0.0, 0.0),
+                offset: Offset(0.0, 0.0),
                 blurRadius: 5.0,
               ),
             ],

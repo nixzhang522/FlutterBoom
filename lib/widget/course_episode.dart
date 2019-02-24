@@ -20,9 +20,10 @@ class EpisodeWidget extends StatelessWidget {
       onTap: () {
         onTap(sceneParent.id.toString(), sceneParent.mainAndMinorScenes);
       },
-      child: new Container(
+      child: Container(
           height: 90.0,
-          padding: new EdgeInsets.fromLTRB(15, 0, 15, 0),
+          padding: EdgeInsets.fromLTRB(15, 0, 15, 0),
+          color: Colors.white,
           child: Row(
             children: <Widget>[
               Center(

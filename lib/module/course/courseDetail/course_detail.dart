@@ -11,6 +11,8 @@ import 'package:boomenglish/utilite/ZNRequestManager.dart';
 import 'package:boomenglish/utilite/ZNResultModel.dart';
 import 'package:boomenglish/model/course.dart';
 
+import 'package:boomenglish/module/course/courseVideo/course_video.dart';
+
 class CourseDetail extends StatefulWidget {
   CourseDetail({
     this.scenarioId,
@@ -249,11 +251,10 @@ class CourseDetailState extends State<CourseDetail>
                   );
                 } else if (item == "课程") {
                   return EpisodeWidget(
-                    sceneParents: _sceneParents,
-                    onTap: (sceneId, scenes) {
-                      showSceneParentList(scenes);
-                    }
-                  );
+                      sceneParents: _sceneParents,
+                      onTap: (sceneId, scenes) {
+                        showSceneParentList(scenes);
+                      });
                 } else {
                   return Container(
                     margin: EdgeInsets.fromLTRB(15, 0, 15, 0),
@@ -269,13 +270,21 @@ class CourseDetailState extends State<CourseDetail>
       ),
     );
   }
-  
+
   // func
   void showSceneParentList(List scenes) {
     showModalBottomSheet(
-      context: context,
-      builder: (context) => EpisodeContentWidget(scenes: scenes,)
-    );
+        context: context,
+        builder: (context) => EpisodeContentWidget(
+              scenes: scenes,
+              onTap: (sceneId) {
+                Navigator.push(
+                    context,
+                    new MaterialPageRoute(
+                        builder: (context) => new CourseVideo(
+                              sceneId: sceneId,
+                            )));
+              },
+            ));
   }
-
 }
