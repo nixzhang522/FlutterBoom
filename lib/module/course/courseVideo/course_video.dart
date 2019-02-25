@@ -55,10 +55,96 @@ class CourseVideoState extends State<CourseVideo>
     double videoHeight = width * 9.0 / 16.0;
     return Chewie(
       controller: ChewieController(
-        videoPlayerController: _videoPlaycontroller,
-        aspectRatio: 16.0 / 9.0,
-        autoPlay: true,
-        looping: true,
+          videoPlayerController: _videoPlaycontroller,
+          aspectRatio: 16.0 / 9.0,
+          autoPlay: false,
+          looping: true,
+          materialProgressColors: new ChewieProgressColors(
+            playedColor: Colors.red,
+            handleColor: Colors.blue,
+            backgroundColor: Colors.grey,
+            bufferedColor: Colors.lightGreen,
+          ),
+          placeholder: new Container(
+            color: Colors.black,
+          ),
+          autoInitialize: true,
+          customControls: playerControlWidget()),
+    );
+  }
+
+  Widget playerControlWidget() {
+    return Container(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          GestureDetector(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: Container(
+              width: 44,
+              height: 44,
+              padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
+              child: Icon(
+                IconData(0xe5e0,
+                    fontFamily: 'MaterialIcons', matchTextDirection: true),
+                color: Colors.white,
+              ),
+            ),
+          ),
+          Row(
+            children: <Widget>[
+              GestureDetector(
+                onTap: () {
+                  if (_videoPlaycontroller.value.isPlaying) {
+                    _videoPlaycontroller.pause();
+                  }
+                  else {
+                    _videoPlaycontroller.play();
+                  }
+                },
+                child: Container(
+                  width: 44,
+                  height: 44,
+                  padding: EdgeInsets.fromLTRB(0, 5, 0, 10),
+                  child: Icon(
+                    IconData(0xe037,
+                        fontFamily: 'MaterialIcons', matchTextDirection: true),
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              Text(
+                "00:00/00:00",
+                style: TextStyle(color: Colors.white),
+              ),
+              Expanded(
+                flex: 1,
+                child: Slider(
+                  value: 0.5,
+                  onChanged: (value) {
+                    print(value);
+                  },
+                ),
+              ),
+              GestureDetector(
+                onTap: () {},
+                child: Container(
+                  width: 44,
+                  height: 44,
+                  padding: EdgeInsets.fromLTRB(0, 5, 0, 10),
+                  child: Icon(
+                    IconData(0xe5d0,
+                        fontFamily: 'MaterialIcons', matchTextDirection: true),
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -68,16 +154,10 @@ class CourseVideoState extends State<CourseVideo>
   }
 
   void _requestData() async {
-    print("========+++++++++++++++++++==========");
-    print(this.widget.sceneId is String);
-    ZNResultModel resultModel = await ZNRequestManager.get(
-        "/v1/scenario/scene/${this.widget.sceneId}/video_subtitle/", {});
-    var data = resultModel.data['data'];
-    print("========+++++++++++++++++++==========");
-    print(data);
-    // setState(() {
-
-    // });
+    // need login
+    // ZNResultModel resultModel = await ZNRequestManager.get(
+    //     "/v1/scenario/scene/${this.widget.sceneId}/video_subtitle/", {});
+    // var data = resultModel.data['data'];
   }
 
   @override
@@ -126,13 +206,9 @@ class CourseVideoState extends State<CourseVideo>
                     controller: _tabController,
                     children: tabList.map((item) {
                       if (item == "详情") {
-                        return Text(
-                          "movie_class",
-                        );
+                        return Center(child: Text("详情"));
                       } else if (item == "评价") {
-                        return Text(
-                          "online_class",
-                        );
+                        return Center(child: Text("评价"));
                       }
                     }).toList(),
                   ),

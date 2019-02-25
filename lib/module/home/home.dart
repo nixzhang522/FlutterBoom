@@ -87,14 +87,6 @@ class HomeState extends State<Home> {
     );
   }
 
-  Widget _swiperBuilder(BuildContext context, int index) {
-    HomeBanner homeBanner = _banners[index];
-    return (Image.network(
-      homeBanner.listImage,
-      fit: BoxFit.fill,
-    ));
-  }
-
   Widget renderRow(i) {
     // banner
     if (i == 0) {
@@ -228,7 +220,6 @@ class HomeState extends State<Home> {
       double itemWidth = (width - 10 * 2 - 10) / 2.0;
       double itemHeight = itemWidth * 7 / 11.0 + 80;
       double ratio = itemWidth / itemHeight;
-
       return new Container(
         height: itemHeight * 2 + 40,
         padding: new EdgeInsets.fromLTRB(10, 10, 10, 0),
@@ -242,95 +233,7 @@ class HomeState extends State<Home> {
             childAspectRatio: ratio,
           ),
           itemCount: _hotCourses.length,
-          itemBuilder: (context, i) {
-            Course course = _hotCourses[i];
-            return new Container(
-              margin: EdgeInsets.fromLTRB(5, 5, 5, 0),
-              decoration: BoxDecoration(
-                color: Color(0xffffffff),
-                borderRadius: BorderRadius.all(new Radius.circular(6)),
-                boxShadow: <BoxShadow>[
-                  new BoxShadow(
-                    color: const Color.fromRGBO(0, 0, 0, 0.1),
-                    offset: new Offset(0.0, 0.0),
-                    blurRadius: 5.0,
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    width: itemWidth,
-                    height: itemWidth * 7 / 11.0,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.rectangle,
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(5),
-                      ),
-                      image: DecorationImage(
-                          image: NetworkImage(course.listImage),
-                          fit: BoxFit.cover),
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: Text(
-                      course.nameZh,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: Color(0xff222626),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                    child: Text(
-                      "更新至第${course.episodeCnt}集",
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Color(0xff8c8c8c),
-                      ),
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Container(
-                        margin: EdgeInsets.fromLTRB(8, 5, 0, 0),
-                        padding: EdgeInsets.fromLTRB(7, 0, 7, 0),
-                        color: Color(0xfffcd433),
-                        height: 16,
-                        child: Text(
-                          "专业",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Color(0xff222626),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.fromLTRB(0, 5, 8, 0),
-                        child: Text(
-                          "免费",
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xff222626),
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            );
-          },
+          itemBuilder: _hotCourseBuilder,
         ),
       );
     }
@@ -381,6 +284,116 @@ class HomeState extends State<Home> {
                       scenarioId: scenarioId,
                     )));
       },
+    );
+  }
+
+  Widget _swiperBuilder(BuildContext context, int index) {
+    HomeBanner homeBanner = _banners[index];
+    return (Image.network(
+      homeBanner.listImage,
+      fit: BoxFit.fill,
+    ));
+  }
+
+  Widget _hotCourseBuilder(BuildContext context, int index) {
+    Size screenSize = MediaQuery.of(context).size;
+    double width = screenSize.width;
+    double itemWidth = (width - 10 * 2 - 10) / 2.0;
+    Course course = _hotCourses[index];
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+            context,
+            new MaterialPageRoute(
+                builder: (context) => new CourseDetail(
+                      scenarioId: course.id.toString(),
+                    )));
+      },
+      child: Container(
+        margin: EdgeInsets.fromLTRB(5, 5, 5, 0),
+        decoration: BoxDecoration(
+          color: Color(0xffffffff),
+          borderRadius: BorderRadius.all(new Radius.circular(6)),
+          boxShadow: <BoxShadow>[
+            new BoxShadow(
+              color: const Color.fromRGBO(0, 0, 0, 0.1),
+              offset: new Offset(0.0, 0.0),
+              blurRadius: 5.0,
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              width: itemWidth,
+              height: itemWidth * 7 / 11.0,
+              decoration: BoxDecoration(
+                shape: BoxShape.rectangle,
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(5),
+                ),
+                image: DecorationImage(
+                    image: NetworkImage(course.listImage), fit: BoxFit.cover),
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+              child: Text(
+                course.nameZh,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Color(0xff222626),
+                ),
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+              child: Text(
+                "更新至第${course.episodeCnt}集",
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  fontSize: 11,
+                  color: Color(0xff8c8c8c),
+                ),
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.fromLTRB(8, 5, 0, 0),
+                  padding: EdgeInsets.fromLTRB(7, 0, 7, 0),
+                  color: Color(0xfffcd433),
+                  height: 16,
+                  child: Text(
+                    "专业",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Color(0xff222626),
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.fromLTRB(0, 5, 8, 0),
+                  child: Text(
+                    "免费",
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xff222626),
+                    ),
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
     );
   }
 }
