@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:custom_chewie/custom_chewie.dart';
+import 'package:chewie/chewie.dart';
 import 'package:video_player/video_player.dart';
 
 import 'package:boomenglish/widget/teacher.dart';
@@ -32,7 +32,7 @@ class CourseVideoState extends State<CourseVideo>
     initTabData();
 
     _videoPlaycontroller = new VideoPlayerController.network(
-      'https://github.com/flutter/assets-for-api-docs/blob/master/assets/videos/butterfly.mp4?raw=true',
+      'https://cdn-files-prod.boomschool.cn/boom-en-china-prod/scene/1339/video_content_low/OchBWrY-RkebQ1CC8ZLovw==.mp4',
     );
 
     _tabController = TabController(
@@ -48,6 +48,19 @@ class CourseVideoState extends State<CourseVideo>
     super.dispose();
     _tabController.dispose();
     _videoPlaycontroller.dispose();
+  }
+
+  Widget playerWidget() {
+    double width = MediaQuery.of(context).size.width;
+    double videoHeight = width * 9.0 / 16.0;
+    return Chewie(
+      controller: ChewieController(
+        videoPlayerController: _videoPlaycontroller,
+        aspectRatio: 16.0 / 9.0,
+        autoPlay: true,
+        looping: true,
+      ),
+    );
   }
 
   initTabData() {
@@ -77,16 +90,10 @@ class CourseVideoState extends State<CourseVideo>
         body: Stack(
           children: <Widget>[
             Container(
-              margin: EdgeInsets.fromLTRB(0, _statusBarHeight, 0, 0),
-              width: width,
-              height: videoHeight,
-              child: Chewie(
-                _videoPlaycontroller,
-                aspectRatio: 16.0 / 9.0,
-                autoPlay: true,
-                looping: true,
-              ),
-            ),
+                margin: EdgeInsets.fromLTRB(0, _statusBarHeight, 0, 0),
+                width: width,
+                height: videoHeight,
+                child: playerWidget()),
             Column(
               children: <Widget>[
                 Container(

@@ -3,7 +3,7 @@ import 'package:boomenglish/model/course.dart';
 
 typedef void EpisodeOnTap(String sceneParentId, List scenes);
 
-class EpisodeWidget extends StatelessWidget {
+class EpisodeWidget extends StatefulWidget {
   EpisodeWidget({
     this.sceneParents,
     this.onTap,
@@ -11,6 +11,11 @@ class EpisodeWidget extends StatelessWidget {
   final List sceneParents;
   final EpisodeOnTap onTap;
 
+  @override
+  EpisodeWidgetState createState() => new EpisodeWidgetState();
+}
+
+class EpisodeWidgetState extends State<EpisodeWidget> {
   List _sceneList = [];
 
   Widget renderRow(i) {
@@ -18,7 +23,7 @@ class EpisodeWidget extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        onTap(sceneParent.id.toString(), sceneParent.mainAndMinorScenes);
+        widget.onTap(sceneParent.id.toString(), sceneParent.mainAndMinorScenes);
       },
       child: Container(
           height: 90.0,
@@ -87,7 +92,7 @@ class EpisodeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List tempArray = [];
-    for (SceneParentClass category in this.sceneParents) {
+    for (SceneParentClass category in widget.sceneParents) {
       tempArray.addAll(category.sceneParents);
     }
     _sceneList = tempArray;
