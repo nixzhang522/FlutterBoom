@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:chewie/chewie.dart';
 import 'package:video_player/video_player.dart';
+import 'package:boomenglish/widget/video_controls.dart';
 
 import 'package:boomenglish/widget/teacher.dart';
 
@@ -51,100 +52,28 @@ class CourseVideoState extends State<CourseVideo>
   }
 
   Widget playerWidget() {
-    double width = MediaQuery.of(context).size.width;
-    double videoHeight = width * 9.0 / 16.0;
     return Chewie(
       controller: ChewieController(
-          videoPlayerController: _videoPlaycontroller,
-          aspectRatio: 16.0 / 9.0,
-          autoPlay: false,
-          looping: true,
-          materialProgressColors: new ChewieProgressColors(
-            playedColor: Colors.red,
-            handleColor: Colors.blue,
-            backgroundColor: Colors.grey,
-            bufferedColor: Colors.lightGreen,
-          ),
-          placeholder: new Container(
-            color: Colors.black,
-          ),
-          autoInitialize: true,
-          customControls: playerControlWidget()),
-    );
-  }
-
-  Widget playerControlWidget() {
-    return Container(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          GestureDetector(
-            onTap: () {
+        videoPlayerController: _videoPlaycontroller,
+        aspectRatio: 16.0 / 9.0,
+        autoPlay: false,
+        looping: true,
+        materialProgressColors: new ChewieProgressColors(
+          playedColor: Colors.red,
+          handleColor: Colors.blue,
+          backgroundColor: Colors.grey,
+          bufferedColor: Colors.lightGreen,
+        ),
+        placeholder: new Container(
+          color: Colors.black,
+        ),
+        autoInitialize: true,
+        customControls: VideoControls(
+            backgroundColor: Colors.transparent,
+            iconColor: Colors.white,
+            backTap: () {
               Navigator.pop(context);
-            },
-            child: Container(
-              width: 44,
-              height: 44,
-              padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
-              child: Icon(
-                IconData(0xe5e0,
-                    fontFamily: 'MaterialIcons', matchTextDirection: true),
-                color: Colors.white,
-              ),
-            ),
-          ),
-          Row(
-            children: <Widget>[
-              GestureDetector(
-                onTap: () {
-                  if (_videoPlaycontroller.value.isPlaying) {
-                    _videoPlaycontroller.pause();
-                  }
-                  else {
-                    _videoPlaycontroller.play();
-                  }
-                },
-                child: Container(
-                  width: 44,
-                  height: 44,
-                  padding: EdgeInsets.fromLTRB(0, 5, 0, 10),
-                  child: Icon(
-                    IconData(0xe037,
-                        fontFamily: 'MaterialIcons', matchTextDirection: true),
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-              Text(
-                "00:00/00:00",
-                style: TextStyle(color: Colors.white),
-              ),
-              Expanded(
-                flex: 1,
-                child: Slider(
-                  value: 0.5,
-                  onChanged: (value) {
-                    print(value);
-                  },
-                ),
-              ),
-              GestureDetector(
-                onTap: () {},
-                child: Container(
-                  width: 44,
-                  height: 44,
-                  padding: EdgeInsets.fromLTRB(0, 5, 0, 10),
-                  child: Icon(
-                    IconData(0xe5d0,
-                        fontFamily: 'MaterialIcons', matchTextDirection: true),
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
+            }),
       ),
     );
   }
