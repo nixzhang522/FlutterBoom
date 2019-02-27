@@ -7,39 +7,13 @@ typedef void CourseOnTap(String courseId);
 
 class CourseWidget extends StatelessWidget {
   CourseWidget({
-    this.course,
+    @required this.course,
     this.onTap,
   });
 
   final Course course;
 
   final CourseOnTap onTap;
-
-  Widget tagsWidget() {
-    List<Widget> tags = [];
-    Widget tagsRow;
-
-    int count = course.tags.length > 2 ? 2 : course.tags.length;
-    for (var i = 0; i < count; i++) {
-      var item = course.tags[i];
-      tags.add(Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(1)),
-            color: Color(0xfffcd433)),
-        margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
-        padding: EdgeInsets.fromLTRB(8, 1, 8, 1),
-        child: Text(
-          item.nameZh,
-          style: TextStyle(fontSize: 11, color: Color(0xff222626)),
-        ),
-      ));
-    }
-    tagsRow = Container(
-      margin: EdgeInsets.fromLTRB(15, 8, 15, 0),
-      child: Row(children: tags),
-    );
-    return tagsRow;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +85,7 @@ class CourseWidget extends StatelessWidget {
                                     fontSize: 13, color: Color(0xff808080)),
                               ),
                             ),
-                            tagsWidget(),
+                            _tagsWidget(),
                           ],
                         ),
                       ),
@@ -170,32 +144,7 @@ class CourseWidget extends StatelessWidget {
                             ],
                           ),
                         ),
-                        Container(
-                            padding: EdgeInsets.fromLTRB(0, 0, 16, 0),
-                            child: coursePrice == "免费"
-                                ? Text(
-                                    '免费',
-                                    style: TextStyle(
-                                        color: Color(0xff222626),
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w700),
-                                  )
-                                : RichText(
-                                    text: TextSpan(
-                                        text: "RMB ",
-                                        style: TextStyle(
-                                            color: Color(0xff222626),
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w700),
-                                        children: <TextSpan>[
-                                          TextSpan(
-                                              text: coursePrice,
-                                              style: TextStyle(
-                                                  color: Color(0xff222626),
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.w700))
-                                        ]),
-                                  ))
+                        _priceWidget(coursePrice),
                       ],
                     ),
                   )
@@ -206,5 +155,60 @@ class CourseWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _tagsWidget() {
+    List<Widget> tags = [];
+    Widget tagsRow;
+
+    int count = course.tags.length > 2 ? 2 : course.tags.length;
+    for (var i = 0; i < count; i++) {
+      var item = course.tags[i];
+      tags.add(Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(1)),
+            color: Color(0xfffcd433)),
+        margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
+        padding: EdgeInsets.fromLTRB(8, 1, 8, 1),
+        child: Text(
+          item.nameZh,
+          style: TextStyle(fontSize: 11, color: Color(0xff222626)),
+        ),
+      ));
+    }
+    tagsRow = Container(
+      margin: EdgeInsets.fromLTRB(15, 8, 15, 0),
+      child: Row(children: tags),
+    );
+    return tagsRow;
+  }
+
+  Widget _priceWidget(String coursePrice) {
+    return Container(
+        padding: EdgeInsets.fromLTRB(0, 0, 16, 0),
+        child: coursePrice == "免费"
+            ? Text(
+                '免费',
+                style: TextStyle(
+                    color: Color(0xff222626),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700),
+              )
+            : RichText(
+                text: TextSpan(
+                    text: "RMB ",
+                    style: TextStyle(
+                        color: Color(0xff222626),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700),
+                    children: <TextSpan>[
+                      TextSpan(
+                          text: coursePrice,
+                          style: TextStyle(
+                              color: Color(0xff222626),
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700))
+                    ]),
+              ));
   }
 }

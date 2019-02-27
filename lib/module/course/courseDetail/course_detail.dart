@@ -27,17 +27,18 @@ class CourseDetail extends StatefulWidget {
 class CourseDetailState extends State<CourseDetail>
     with SingleTickerProviderStateMixin {
   TabController _tabController;
-  List<String> tabList;
+  List<String> _tabList;
   Course _course;
   List _descriptions = [];
   List _sceneParents = [];
+  double _opacity = 0.0;
 
   @override
   void initState() {
     super.initState();
-    initTabData();
+    _initTabData();
     _tabController = TabController(
-      length: tabList.length,
+      length: _tabList.length,
       vsync: this,
     );
 
@@ -50,8 +51,8 @@ class CourseDetailState extends State<CourseDetail>
     _tabController.dispose();
   }
 
-  initTabData() {
-    tabList = ['详情', '课程', '评价'];
+  _initTabData() {
+    _tabList = ['详情', '课程', '评价'];
   }
 
   void _requestData() async {
@@ -69,93 +70,180 @@ class CourseDetailState extends State<CourseDetail>
     });
   }
 
-  Widget courseInfo() {
+  bool _handleScrollNotification(ScrollNotification notification) {
+    if (notification.depth == 0 && notification.metrics.axisDirection == AxisDirection.down) {
+      double opacity = notification.metrics.pixels / 200;
+      opacity = opacity < 0 ? 0 : opacity;
+      opacity = opacity > 1 ? 1 : opacity;
+      setState(() {
+        _opacity = opacity;
+      });
+    }
+    return true;
+  }
+
+  // func
+  void _showSceneParentList(List scenes) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) => EpisodeContentWidget(
+              scenes: scenes,
+              onTap: (sceneId) {
+                Navigator.push(
+                    context,
+                    new MaterialPageRoute(
+                        builder: (context) => new CourseVideo(
+                              sceneId: sceneId,
+                            )));
+              },
+            ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    double height = width * 9.0 / 16.0;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Container(
-            color: Color(0xffe6e6e6),
-            width: width,
-            height: height,
-            child: CachedNetworkImage(
-              fit: BoxFit.cover,
-              imageUrl: _course?.mainImage ?? "https://www.png",
-              placeholder: (context, url) => Image.asset(
-                  "assets/images/placeholder_course.png",
-                  width: width,
-                  height: height,
-                  fit: BoxFit.cover),
-              errorWidget: (context, url, error) => Image.asset(
-                    "assets/images/placeholder_course.png",
-                    width: width,
-                    height: height,
-                    fit: BoxFit.cover,
+    return Scaffold(
+      appBar: null,
+      body: Stack(
+        children: <Widget>[
+          NotificationListener<ScrollNotification>(
+            onNotification: _handleScrollNotification,
+            child: NestedScrollView(
+              headerSliverBuilder:
+                  (BuildContext context, bool innerBoxIsScrolled) {
+                return <Widget>[
+                  SliverToBoxAdapter(
+                    child: Container(
+                      width: width,
+                      height: width * 9.0 / 16.0 + 300,
+                      child: _courseInfo(),
+                    ),
                   ),
-            )),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.fromLTRB(15, 16, 15, 0),
-              child: Text(
-                _course?.nameZh ?? "",
-                style: TextStyle(
-                    fontSize: 20,
-                    color: Color(0xff222626),
-                    fontWeight: FontWeight.w700),
+                ];
+              },
+              body: TabBarView(
+                controller: _tabController,
+                children: _tabList.map((item) {
+                  if (item == "详情") {
+                    return CourseDescriptions(
+                      width: width,
+                      descriptions: _descriptions,
+                    );
+                  } else if (item == "课程") {
+                    return EpisodeWidget(
+                        sceneParents: _sceneParents,
+                        onTap: (sceneId, scenes) {
+                          _showSceneParentList(scenes);
+                        });
+                  } else {
+                    return Container(
+                      margin: EdgeInsets.fromLTRB(15, 0, 15, 0),
+                      color: Colors.white,
+                      child: Center(child: Text("暂无评价")),
+                    );
+                  }
+                }).toList(),
               ),
             ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(0, 16, 15, 0),
-              child: Text("免费",
-                  style: TextStyle(
-                      fontSize: 15,
-                      color: Color(0xff808080),
-                      fontWeight: FontWeight.w700)),
-            ),
-          ],
-        ),
-        describe("• 针对人群：${_course?.targetAudience ?? '所有人'}"),
-        describe("• 更新至第${_course?.episodeCnt ?? 1}集"),
-        describe("• 已有300人参与"),
-        tagsWidget(),
-        Container(
-          height: 110,
-          padding: EdgeInsets.fromLTRB(16, 15, 16, 0),
-          child: TeacherWidget(
-            user: _course?.user,
           ),
-        ),
-        Container(
-          color: new Color(0xffffffff),
-          height: 44.0,
-          margin: EdgeInsets.fromLTRB(15, 0, 0, 0),
-          alignment: Alignment.centerLeft,
-          child: TabBar(
-            isScrollable: true,
-            controller: _tabController,
-            labelPadding: EdgeInsets.fromLTRB(0, 11, 10, 0),
-            labelColor: Color(0xff222626),
-            unselectedLabelColor: Color(0xff808080),
-            labelStyle: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w700),
-            indicatorColor: Color(0xfffcd433),
-            indicatorWeight: 6,
-            indicatorSize: TabBarIndicatorSize.tab,
-            indicatorPadding: EdgeInsets.fromLTRB(0, 0, 10, 10),
-            tabs: tabList.map((item) {
-              return Tab(
-                text: item,
-              );
-            }).toList(),
-          ),
-        )
-      ],
+          _navWidget(),
+        ],
+      ),
     );
   }
 
-  Widget describe(String text) {
+  Widget _courseInfo() {
+    double width = MediaQuery.of(context).size.width;
+    double height = width * 9.0 / 16.0;
+    return Container(
+      color: Color(0xffffffff),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+              width: width,
+              height: height,
+              child: CachedNetworkImage(
+                width: width,
+                height: height,
+                fit: BoxFit.cover,
+                imageUrl: _course?.mainImage ?? "https://www.png",
+                placeholder: (context, url) => Image.asset(
+                    "assets/images/placeholder_course.png",
+                    width: width,
+                    height: height,
+                    fit: BoxFit.cover),
+                errorWidget: (context, url, error) => Image.asset(
+                      "assets/images/placeholder_course.png",
+                      width: width,
+                      height: height,
+                      fit: BoxFit.cover,
+                    ),
+              )),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.fromLTRB(15, 16, 15, 0),
+                child: Text(
+                  _course?.nameZh ?? "",
+                  style: TextStyle(
+                      fontSize: 20,
+                      color: Color(0xff222626),
+                      fontWeight: FontWeight.w700),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(0, 16, 15, 0),
+                child: Text("免费",
+                    style: TextStyle(
+                        fontSize: 15,
+                        color: Color(0xff808080),
+                        fontWeight: FontWeight.w700)),
+              ),
+            ],
+          ),
+          _describe("• 针对人群：${_course?.targetAudience ?? '所有人'}"),
+          _describe("• 更新至第${_course?.episodeCnt ?? 1}集"),
+          _describe("• 已有300人参与"),
+          _tagsWidget(),
+          Container(
+            height: 110,
+            padding: EdgeInsets.fromLTRB(16, 15, 16, 0),
+            child: TeacherWidget(
+              user: _course?.user,
+            ),
+          ),
+          Container(
+            color: new Color(0xffffffff),
+            height: 44.0,
+            margin: EdgeInsets.fromLTRB(15, 0, 0, 0),
+            alignment: Alignment.centerLeft,
+            child: TabBar(
+              isScrollable: true,
+              controller: _tabController,
+              labelPadding: EdgeInsets.fromLTRB(0, 11, 10, 0),
+              labelColor: Color(0xff222626),
+              unselectedLabelColor: Color(0xff808080),
+              labelStyle:
+                  TextStyle(fontSize: 20.0, fontWeight: FontWeight.w700),
+              indicatorColor: Color(0xfffcd433),
+              indicatorWeight: 6,
+              indicatorSize: TabBarIndicatorSize.tab,
+              indicatorPadding: EdgeInsets.fromLTRB(0, 0, 10, 10),
+              tabs: _tabList.map((item) {
+                return Tab(
+                  text: item,
+                );
+              }).toList(),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _describe(String text) {
     return Padding(
       padding: EdgeInsets.fromLTRB(15, 4, 15, 0),
       child: Text(
@@ -165,7 +253,7 @@ class CourseDetailState extends State<CourseDetail>
     );
   }
 
-  Widget tagsWidget() {
+  Widget _tagsWidget() {
     List<Widget> tags = [];
     Widget tagsRow;
     if (_course != null) {
@@ -192,99 +280,45 @@ class CourseDetailState extends State<CourseDetail>
     return tagsRow;
   }
 
-  Widget navWidget() {
+  Widget _navWidget() {
     double _statusBarHeight = MediaQuery.of(context).padding.top;
     double width = MediaQuery.of(context).size.width;
-    return Container(
-      color: Colors.transparent,
-      width: width,
-      height: _statusBarHeight + 44,
-      child: Row(
-        children: <Widget>[
-          Container(
-            width: 44,
-            height: 44,
-            margin: EdgeInsets.fromLTRB(5, _statusBarHeight, 0, 0),
-            child: GestureDetector(
-              child: Icon(
-                IconData(0xe5e0,
-                    fontFamily: 'MaterialIcons', matchTextDirection: true),
-                color: Color(0xffffffff),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    return Scaffold(
-      appBar: null,
-      body: Stack(
-        children: <Widget>[
-          NestedScrollView(
-            headerSliverBuilder:
-                (BuildContext context, bool innerBoxIsScrolled) {
-              return <Widget>[
-                SliverToBoxAdapter(
-                  child: Container(
-                    width: width,
-                    height: width * 9.0 / 16.0 + 300,
-                    child: courseInfo(),
-                  ),
+    return Stack(
+      children: <Widget>[
+        Opacity(
+          opacity: _opacity,
+          child: Container(
+            width: width,
+            height: _statusBarHeight + 44,
+            color: Colors.white,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(60, _statusBarHeight, 60, 0),
+              child: Center(
+                child: Text(
+                  _course?.nameZh ?? "",
+                  style: TextStyle(fontSize: 19, color: Color(0xff222626)),
                 ),
-              ];
-            },
-            body: TabBarView(
-              controller: _tabController,
-              children: tabList.map((item) {
-                if (item == "详情") {
-                  return CourseDescriptions(
-                    width: width,
-                    descriptions: _descriptions,
-                  );
-                } else if (item == "课程") {
-                  return EpisodeWidget(
-                      sceneParents: _sceneParents,
-                      onTap: (sceneId, scenes) {
-                        showSceneParentList(scenes);
-                      });
-                } else {
-                  return Container(
-                    margin: EdgeInsets.fromLTRB(15, 0, 15, 0),
-                    color: Colors.white,
-                    child: Center(child: Text("暂无评价")),
-                  );
-                }
-              }).toList(),
+              ),
             ),
           ),
-          navWidget(),
-        ],
-      ),
+        ),
+        Container(
+          width: 44,
+          height: 44,
+          margin: EdgeInsets.fromLTRB(5, _statusBarHeight, 0, 0),
+          child: GestureDetector(
+            child: Icon(
+              IconData(0xe5e0,
+                  fontFamily: 'MaterialIcons', matchTextDirection: true),
+              color: _opacity == 1 ? Color(0xff222626) : Color(0xffffffff),
+            ),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+        ),
+      ],
     );
   }
 
-  // func
-  void showSceneParentList(List scenes) {
-    showModalBottomSheet(
-        context: context,
-        builder: (context) => EpisodeContentWidget(
-              scenes: scenes,
-              onTap: (sceneId) {
-                Navigator.push(
-                    context,
-                    new MaterialPageRoute(
-                        builder: (context) => new CourseVideo(
-                              sceneId: sceneId,
-                            )));
-              },
-            ));
-  }
 }
