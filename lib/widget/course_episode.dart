@@ -40,7 +40,7 @@ class EpisodeWidgetState extends State<EpisodeWidget> {
                       borderRadius: BorderRadius.circular(10)),
                   child: Center(
                     child: Text(
-                      sceneParent.sortorder.toString() ?? "01",
+                      (i+1).toString() ?? "01",
                       style: TextStyle(fontSize: 11, color: Color(0xFF222626)),
                     ),
                   ),

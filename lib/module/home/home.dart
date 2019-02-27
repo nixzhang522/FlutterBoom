@@ -296,14 +296,14 @@ class HomeState extends State<Home> {
   }
 
   Widget _hotCourseBuilder(BuildContext context, int index) {
-    Size screenSize = MediaQuery.of(context).size;
+    Size screenSize = MediaQuery.of(this.context).size;
     double width = screenSize.width;
     double itemWidth = (width - 10 * 2 - 10) / 2.0;
     Course course = _hotCourses[index];
     return GestureDetector(
       onTap: () {
         Navigator.push(
-            context,
+            this.context,
             new MaterialPageRoute(
                 builder: (context) => new CourseDetail(
                       scenarioId: course.id.toString(),
