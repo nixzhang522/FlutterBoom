@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+
 import 'package:boomenglish/widget/course_widget.dart';
 
 import 'package:boomenglish/utilite/ZNRequestManager.dart';
@@ -25,6 +27,7 @@ class HomeState extends State<Home> {
     {"icon": "assets/images/main_story.png", "title": "故事对白"},
     {"icon": "assets/images/main_dub.png", "title": "最新配音"},
   ];
+  var _refreshController = new RefreshController();
 
   @override
   void initState() {
@@ -32,7 +35,7 @@ class HomeState extends State<Home> {
     this._requestData();
   }
 
-  void _requestData() async {
+  Future _requestData() async {
     ZNResultModel resultModel = await ZNRequestManager.get("/v1/home/v5/", {});
     var data = resultModel.data['data'];
 
@@ -56,96 +59,65 @@ class HomeState extends State<Home> {
     return new MaterialApp(
       theme: new ThemeData(primaryColor: Color(0xffffffff)),
       home: new Scaffold(
-          appBar: new AppBar(
-            elevation: 0.5,
-            title: Text('爆英语'),
-            actions: <Widget>[
-              IconButton(
-                  icon: Image.asset(
-                    'assets/images/main_mycourse.png',
-                    width: 16,
-                    height: 18,
-                  ),
-                  onPressed: () {}),
-              IconButton(
-                  icon: Image.asset(
-                    'assets/images/main_message.png',
-                    width: 18,
-                    height: 18,
-                  ),
-                  onPressed: () {}),
-            ],
+        appBar: new AppBar(
+          elevation: 0.5,
+          title: Text('爆英语'),
+          actions: <Widget>[
+            IconButton(
+                icon: Image.asset(
+                  'assets/images/main_mycourse.png',
+                  width: 16,
+                  height: 18,
+                ),
+                onPressed: () {}),
+            IconButton(
+                icon: Image.asset(
+                  'assets/images/main_message.png',
+                  width: 18,
+                  height: 18,
+                ),
+                onPressed: () {}),
+          ],
+        ),
+        backgroundColor: Colors.white,
+        body: new SmartRefresher(
+          enablePullDown: true,
+          onRefresh: (bool up) async {
+            await _requestData(); // 等待异步操作
+            _refreshController.sendBack(
+                true, RefreshStatus.completed); // 设置状态为完成
+          },
+          onOffsetChange: (bool up, double offset) {},
+          headerBuilder: (context, mode) {
+            return new ClassicIndicator(
+              mode: mode,
+              height: 45.0,
+              releaseText: '松开手刷新',
+              refreshingText: '刷新中',
+              completeText: '刷新完成',
+              failedText: '刷新失败',
+              idleText: '下拉刷新',
+            );
+          },
+          controller: _refreshController, // 控制器
+          child: ListView.builder(
+            padding: EdgeInsets.fromLTRB(0, 0, 0, 15),
+            itemCount: 6 + _recommendCourses.length,
+            itemBuilder: (context, i) => renderRow(i),
           ),
-          body: Container(
-            color: Colors.white,
-            child: new ListView.builder(
-              padding: EdgeInsets.fromLTRB(0, 0, 0, 15),
-              itemCount: 6 + _recommendCourses.length,
-              itemBuilder: (context, i) => renderRow(i),
-            ),
-          )),
+        ),
+      ),
     );
   }
 
   Widget renderRow(i) {
     // banner
     if (i == 0) {
-      Size screenSize = MediaQuery.of(context).size;
-      double screenWidth = screenSize.width;
-      double height = (screenWidth - 30) * 145.0 / 345.0;
-
-      return new Container(
-          height: height,
-          margin: new EdgeInsets.fromLTRB(15, 15, 15, 0),
-          child: new ClipRRect(
-            borderRadius: BorderRadius.all(new Radius.circular(6)),
-            child: Swiper(
-              itemBuilder: _swiperBuilder,
-              itemCount: _banners.length,
-              pagination: new SwiperPagination(
-                  alignment: Alignment.bottomRight,
-                  builder: DotSwiperPaginationBuilder(
-                    color: Colors.white30,
-                    activeColor: Colors.white,
-                  )),
-              scrollDirection: Axis.horizontal,
-              autoplay: true,
-              autoplayDelay: 5000,
-              onTap: (index) => print('点击了第$index个'),
-            ),
-          ));
+      return _bannerBuilder();
     }
     // draw
     if (i == 1) {
-      return new Container(
-        height: 52,
-        margin: new EdgeInsets.fromLTRB(15, 15, 15, 0),
-        child: new Row(
-          children: <Widget>[
-            new Container(
-              child: new Image.asset(
-                'assets/images/main_draw.png',
-                width: 30,
-                height: 30,
-              ),
-              margin: new EdgeInsets.fromLTRB(16, 0, 10, 0),
-            ),
-            new Text('打卡赢抽奖',
-                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18)),
-          ],
-        ),
-        decoration: new BoxDecoration(
-          color: Colors.white,
-          borderRadius: new BorderRadius.all(new Radius.circular(6)),
-          boxShadow: <BoxShadow>[
-            new BoxShadow(
-              color: const Color.fromRGBO(0, 0, 0, 0.1),
-              offset: new Offset(0.0, 0.0),
-              blurRadius: 5.0,
-            ),
-          ],
-        ),
-      );
+      return _drawBuilder();
     }
     // module
     if (i == 2) {
@@ -190,28 +162,7 @@ class HomeState extends State<Home> {
     }
     // hot course title
     if (i == 3) {
-      return new Container(
-        height: 50,
-        margin: new EdgeInsets.fromLTRB(15, 25, 15, 0),
-        child: new Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            new Text(
-              '热门课程',
-              style: new TextStyle(
-                  fontSize: 18,
-                  height: 1.2,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xff222626)),
-            ),
-            new Text('大家喜欢的课程在这里',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Color(0xff808080),
-                ))
-          ],
-        ),
-      );
+      return _courseCategoryBuilder('热门课程', '大家喜欢的课程在这里', false);
     }
     // hot course
     if (i == 4) {
@@ -239,38 +190,7 @@ class HomeState extends State<Home> {
     }
     // recommend course title
     if (i == 5) {
-      return new Container(
-        height: 50,
-        margin: new EdgeInsets.fromLTRB(15, 10, 15, 0),
-        child: new Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            new Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                new Text(
-                  '推荐课程',
-                  style: new TextStyle(
-                      fontSize: 18,
-                      height: 1.2,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xff222626)),
-                ),
-                new Text('为你量身定做的课程在这里',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Color(0xff808080),
-                    ))
-              ],
-            ),
-            new Image.asset(
-              "assets/images/arrow.png",
-              width: 14,
-              height: 14,
-            )
-          ],
-        ),
-      );
+      return _courseCategoryBuilder('推荐课程', '为你量身定做的课程在这里', true);
     }
     // recommend course
     Course course = _recommendCourses[i - 6];
@@ -287,12 +207,107 @@ class HomeState extends State<Home> {
     );
   }
 
+  Widget _bannerBuilder() {
+    Size screenSize = MediaQuery.of(context).size;
+    double screenWidth = screenSize.width;
+    double height = (screenWidth - 30) * 145.0 / 345.0;
+    return new Container(
+        height: height,
+        margin: new EdgeInsets.fromLTRB(15, 15, 15, 0),
+        child: new ClipRRect(
+          borderRadius: BorderRadius.all(new Radius.circular(6)),
+          child: Swiper(
+            itemBuilder: _swiperBuilder,
+            itemCount: _banners.length,
+            pagination: new SwiperPagination(
+                alignment: Alignment.bottomRight,
+                builder: DotSwiperPaginationBuilder(
+                  color: Colors.white30,
+                  activeColor: Colors.white,
+                )),
+            scrollDirection: Axis.horizontal,
+            autoplay: true,
+            autoplayDelay: 5000,
+            onTap: (index) => print('点击了第$index个'),
+          ),
+        ));
+  }
+
   Widget _swiperBuilder(BuildContext context, int index) {
     HomeBanner homeBanner = _banners[index];
     return (Image.network(
       homeBanner.listImage,
       fit: BoxFit.fill,
     ));
+  }
+
+  Widget _drawBuilder() {
+    return new Container(
+      height: 52,
+      margin: new EdgeInsets.fromLTRB(15, 15, 15, 0),
+      child: new Row(
+        children: <Widget>[
+          new Container(
+            child: new Image.asset(
+              'assets/images/main_draw.png',
+              width: 30,
+              height: 30,
+            ),
+            margin: new EdgeInsets.fromLTRB(16, 0, 10, 0),
+          ),
+          new Text('打卡赢抽奖',
+              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18)),
+        ],
+      ),
+      decoration: new BoxDecoration(
+        color: Colors.white,
+        borderRadius: new BorderRadius.all(new Radius.circular(6)),
+        boxShadow: <BoxShadow>[
+          new BoxShadow(
+            color: const Color.fromRGBO(0, 0, 0, 0.1),
+            offset: new Offset(0.0, 0.0),
+            blurRadius: 5.0,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _courseCategoryBuilder(String name, String tagline, bool more) {
+    return new Container(
+      height: 50,
+      margin: new EdgeInsets.fromLTRB(15, 10, 15, 0),
+      child: new Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          new Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              new Text(
+                name ?? "",
+                style: new TextStyle(
+                    fontSize: 18,
+                    height: 1.2,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xff222626)),
+              ),
+              new Text(tagline ?? "",
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Color(0xff808080),
+                  ))
+            ],
+          ),
+          more
+              ? new Image.asset(
+                  "assets/images/arrow.png",
+                  width: 14,
+                  height: 14,
+                )
+              : Container(),
+        ],
+      ),
+    );
   }
 
   Widget _hotCourseBuilder(BuildContext context, int index) {
