@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:progress_hud/progress_hud.dart';
 
 import 'package:boomenglish/widget/teacher.dart';
 import 'course_descriptions.dart';
@@ -32,6 +33,8 @@ class CourseDetailState extends State<CourseDetail>
   List _descriptions = [];
   List _sceneParents = [];
   double _opacity = 0.0;
+  ProgressHUD _progressHUD;
+  bool _loading = true;
 
   @override
   void initState() {
@@ -40,6 +43,12 @@ class CourseDetailState extends State<CourseDetail>
     _tabController = TabController(
       length: _tabList.length,
       vsync: this,
+    );
+
+    _progressHUD = ProgressHUD(
+      backgroundColor: Color(0xFFF4F4F4),
+      color: Colors.grey,
+      containerColor: Colors.transparent,
     );
 
     _requestData();
@@ -67,11 +76,13 @@ class CourseDetailState extends State<CourseDetail>
       _course = course;
       _descriptions = descriptions;
       _sceneParents = _course.sceneParents;
+      _loading = false;
     });
   }
 
   bool _handleScrollNotification(ScrollNotification notification) {
-    if (notification.depth == 0 && notification.metrics.axisDirection == AxisDirection.down) {
+    if (notification.depth == 0 &&
+        notification.metrics.axisDirection == AxisDirection.down) {
       double opacity = notification.metrics.pixels / 200;
       opacity = opacity < 0 ? 0 : opacity;
       opacity = opacity > 1 ? 1 : opacity;
@@ -106,46 +117,48 @@ class CourseDetailState extends State<CourseDetail>
       appBar: null,
       body: Stack(
         children: <Widget>[
-          NotificationListener<ScrollNotification>(
-            onNotification: _handleScrollNotification,
-            child: NestedScrollView(
-              headerSliverBuilder:
-                  (BuildContext context, bool innerBoxIsScrolled) {
-                return <Widget>[
-                  SliverToBoxAdapter(
-                    child: Container(
-                      width: width,
-                      height: width * 9.0 / 16.0 + 300,
-                      child: _courseInfo(),
+          _loading
+              ? _progressHUD
+              : NotificationListener<ScrollNotification>(
+                  onNotification: _handleScrollNotification,
+                  child: NestedScrollView(
+                    headerSliverBuilder:
+                        (BuildContext context, bool innerBoxIsScrolled) {
+                      return <Widget>[
+                        SliverToBoxAdapter(
+                          child: Container(
+                            width: width,
+                            height: width * 9.0 / 16.0 + 300,
+                            child: _courseInfo(),
+                          ),
+                        ),
+                      ];
+                    },
+                    body: TabBarView(
+                      controller: _tabController,
+                      children: _tabList.map((item) {
+                        if (item == "详情") {
+                          return CourseDescriptions(
+                            width: width,
+                            descriptions: _descriptions,
+                          );
+                        } else if (item == "课程") {
+                          return EpisodeWidget(
+                              sceneParents: _sceneParents,
+                              onTap: (sceneId, scenes) {
+                                _showSceneParentList(scenes);
+                              });
+                        } else {
+                          return Container(
+                            margin: EdgeInsets.fromLTRB(15, 0, 15, 0),
+                            color: Colors.white,
+                            child: Center(child: Text("暂无评价")),
+                          );
+                        }
+                      }).toList(),
                     ),
                   ),
-                ];
-              },
-              body: TabBarView(
-                controller: _tabController,
-                children: _tabList.map((item) {
-                  if (item == "详情") {
-                    return CourseDescriptions(
-                      width: width,
-                      descriptions: _descriptions,
-                    );
-                  } else if (item == "课程") {
-                    return EpisodeWidget(
-                        sceneParents: _sceneParents,
-                        onTap: (sceneId, scenes) {
-                          _showSceneParentList(scenes);
-                        });
-                  } else {
-                    return Container(
-                      margin: EdgeInsets.fromLTRB(15, 0, 15, 0),
-                      color: Colors.white,
-                      child: Center(child: Text("暂无评价")),
-                    );
-                  }
-                }).toList(),
-              ),
-            ),
-          ),
+                ),
           _navWidget(),
         ],
       ),
@@ -320,5 +333,4 @@ class CourseDetailState extends State<CourseDetail>
       ],
     );
   }
-
 }

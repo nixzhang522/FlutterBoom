@@ -28,6 +28,9 @@ dependencies:
   cached_network_image: ^0.6.0+1  # image
   chewie: ^0.9.6  # video
   pull_to_refresh: ^1.1.6 #刷新
+  progress_hud: ^1.1.0
+  fluttertoast: ^3.0.1
+  
 
 dev_dependencies:
   flutter_test:

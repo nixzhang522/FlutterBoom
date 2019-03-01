@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:progress_hud/progress_hud.dart';
 
 import 'package:boomenglish/widget/course_widget.dart';
 
@@ -28,11 +29,19 @@ class HomeState extends State<Home> {
     {"icon": "assets/images/main_dub.png", "title": "最新配音"},
   ];
   var _refreshController = new RefreshController();
+  ProgressHUD _progressHUD;
+  bool _loading = true;
 
   @override
   void initState() {
     super.initState();
     this._requestData();
+
+    _progressHUD = ProgressHUD(
+      backgroundColor: Colors.transparent,
+      color: Colors.grey,
+      containerColor: Colors.transparent,
+    );
   }
 
   Future _requestData() async {
@@ -51,6 +60,7 @@ class HomeState extends State<Home> {
       _banners = banners;
       _hotCourses = hotCourses;
       _recommendCourses = recommendCourses;
+      _loading = false;
     });
   }
 
@@ -80,32 +90,34 @@ class HomeState extends State<Home> {
           ],
         ),
         backgroundColor: Colors.white,
-        body: new SmartRefresher(
-          enablePullDown: true,
-          onRefresh: (bool up) async {
-            await _requestData(); // 等待异步操作
-            _refreshController.sendBack(
-                true, RefreshStatus.completed); // 设置状态为完成
-          },
-          onOffsetChange: (bool up, double offset) {},
-          headerBuilder: (context, mode) {
-            return new ClassicIndicator(
-              mode: mode,
-              height: 45.0,
-              releaseText: '松开手刷新',
-              refreshingText: '刷新中',
-              completeText: '刷新完成',
-              failedText: '刷新失败',
-              idleText: '下拉刷新',
-            );
-          },
-          controller: _refreshController, // 控制器
-          child: ListView.builder(
-            padding: EdgeInsets.fromLTRB(0, 0, 0, 15),
-            itemCount: 6 + _recommendCourses.length,
-            itemBuilder: (context, i) => renderRow(i),
-          ),
-        ),
+        body: _loading
+            ? _progressHUD
+            : SmartRefresher(
+                enablePullDown: true,
+                onRefresh: (bool up) async {
+                  await _requestData(); // 等待异步操作
+                  _refreshController.sendBack(
+                      true, RefreshStatus.completed); // 设置状态为完成
+                },
+                onOffsetChange: (bool up, double offset) {},
+                headerBuilder: (context, mode) {
+                  return new ClassicIndicator(
+                    mode: mode,
+                    height: 45.0,
+                    releaseText: '松开手刷新',
+                    refreshingText: '刷新中',
+                    completeText: '刷新完成',
+                    failedText: '刷新失败',
+                    idleText: '下拉刷新',
+                  );
+                },
+                controller: _refreshController, // 控制器
+                child: ListView.builder(
+                  padding: EdgeInsets.fromLTRB(0, 0, 0, 15),
+                  itemCount: 6 + _recommendCourses.length,
+                  itemBuilder: (context, i) => renderRow(i),
+                ),
+              ),
       ),
     );
   }
