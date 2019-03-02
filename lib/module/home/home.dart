@@ -12,6 +12,7 @@ import 'package:boomenglish/model/home_banner.dart';
 import 'package:boomenglish/model/course.dart';
 
 import 'package:boomenglish/module/course/courseDetail/course_detail.dart';
+import 'package:boomenglish/module/login/login.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -79,7 +80,12 @@ class HomeState extends State<Home> {
                   width: 16,
                   height: 18,
                 ),
-                onPressed: () {}),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      new MaterialPageRoute(
+                          builder: (context) => new Login()));
+                }),
             IconButton(
                 icon: Image.asset(
                   'assets/images/main_message.png',
