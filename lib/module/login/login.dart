@@ -5,6 +5,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:boomenglish/utilite/ZNRequestManager.dart';
 import 'package:boomenglish/utilite/ZNResultModel.dart';
+import 'package:boomenglish/model/user.dart';
+
+import 'package:boomenglish/help/user_manager.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -12,6 +15,9 @@ class Login extends StatefulWidget {
 }
 
 class LoginState extends State<Login> {
+  TextEditingController _phoneController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+
   ProgressHUD _progressHUD;
   bool _loading = false;
 
@@ -26,12 +32,36 @@ class LoginState extends State<Login> {
     );
   }
 
-  Future _requestData() async {
-    ZNResultModel resultModel = await ZNRequestManager.get("/v1/home/v5/", {});
+  void _login() async {
+    setState(() {
+      _loading = true;
+    });
+    if (_phoneController.text.length != 11) {
+      Fluttertoast.showToast(msg: "请输入正确手机号码！");
+      return;
+    }
+    if (_passwordController.text.length == 0) {
+      Fluttertoast.showToast(msg: "请输入密码");
+      return;
+    }
+    var param = {
+      "phone": _phoneController.text,
+      "password": _passwordController.text,
+      "country_code": "86",
+      "device": {"brand": "apple", "model": "iPhone 6s Plus"}
+    };
+    ZNResultModel resultModel =
+        await ZNRequestManager.post("/v1/account/login/", param);
     var data = resultModel.data['data'];
+    String token = resultModel.data["access_token"].toString();
+    User user = User.fromJson(data["user"]);
+    UserManager userManager = UserManager();
+    userManager.token = token;
+    userManager.user = user;
     setState(() {
       _loading = false;
     });
+    Navigator.pop(context);
   }
 
   @override
@@ -55,11 +85,16 @@ class LoginState extends State<Login> {
           title: Text('登录'),
         ),
         backgroundColor: Color(0xFFFCD433),
-        body: Column(
+        body: Stack(
           children: <Widget>[
-            _accountBuilder(),
-            _passwordBuilder(),
-            _loginButtonBuilder(),
+            Column(
+              children: <Widget>[
+                _accountBuilder(),
+                _passwordBuilder(),
+                _loginButtonBuilder(),
+              ],
+            ),
+            _loading ? _progressHUD : Container(),
           ],
         ),
       ),
@@ -84,6 +119,7 @@ class LoginState extends State<Login> {
           ),
           Expanded(
             child: TextField(
+              controller: _phoneController,
               decoration: InputDecoration(
                 contentPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                 hintText: "请输入账号",
@@ -119,6 +155,7 @@ class LoginState extends State<Login> {
           ),
           Expanded(
             child: TextField(
+              controller: _passwordController,
               decoration: InputDecoration(
                 contentPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                 hintText: "请输入密码",
@@ -149,7 +186,9 @@ class LoginState extends State<Login> {
             "登  录",
             style: TextStyle(fontSize: 16, color: Colors.white),
           ),
-          onPressed: () {},
+          onPressed: () {
+            _login();
+          },
           textTheme: ButtonTextTheme.normal,
           textColor: Colors.yellow,
           disabledTextColor: Colors.red,

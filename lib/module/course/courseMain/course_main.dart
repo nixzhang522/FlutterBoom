@@ -68,7 +68,7 @@ class CourseState extends State<CourseMain>
               children: tabList.map((item) {
                 if (item == "订阅") {
                   return CourseList(
-                    url: "movie_class",
+                    url: "movie_subscribed",
                   );
                 } else if (item == "网课") {
                   return CourseList(

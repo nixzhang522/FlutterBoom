@@ -46,21 +46,25 @@ class HomeState extends State<Home> {
   }
 
   Future _requestData() async {
-    ZNResultModel resultModel = await ZNRequestManager.get("/v1/home/v5/", {});
-    var data = resultModel.data['data'];
+    ZNResultModel resultModel = await ZNRequestManager.get("/v1/home/v5", {});
+    if (resultModel.success) {
+      var data = resultModel.data['data'];
 
-    List banners =
-        data["banners"].map((m) => new HomeBanner.fromJson(m)).toList();
-    List hotCourses =
-        data["hot_scenarios"].map((m) => new Course.fromJson(m)).toList();
-    List recommendCourses = data["recommended_scenarios"]
-        .map((m) => new Course.fromJson(m))
-        .toList();
+      List banners =
+          data["banners"].map((m) => new HomeBanner.fromJson(m)).toList();
+      List hotCourses =
+          data["hot_scenarios"].map((m) => new Course.fromJson(m)).toList();
+      List recommendCourses = data["recommended_scenarios"]
+          .map((m) => new Course.fromJson(m))
+          .toList();
 
+      setState(() {
+        _banners = banners;
+        _hotCourses = hotCourses;
+        _recommendCourses = recommendCourses;
+      });
+    }
     setState(() {
-      _banners = banners;
-      _hotCourses = hotCourses;
-      _recommendCourses = recommendCourses;
       _loading = false;
     });
   }
@@ -81,10 +85,8 @@ class HomeState extends State<Home> {
                   height: 18,
                 ),
                 onPressed: () {
-                  Navigator.push(
-                      context,
-                      new MaterialPageRoute(
-                          builder: (context) => new Login()));
+                  Navigator.push(context,
+                      new MaterialPageRoute(builder: (context) => new Login()));
                 }),
             IconButton(
                 icon: Image.asset(
