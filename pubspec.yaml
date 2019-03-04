@@ -29,6 +29,7 @@ dependencies:
   chewie: ^0.9.6  # video
   pull_to_refresh: ^1.1.6 #刷新
   progress_hud: ^1.1.0
+  modal_progress_hud: ^0.1.2
   fluttertoast: ^3.0.1
   
 
