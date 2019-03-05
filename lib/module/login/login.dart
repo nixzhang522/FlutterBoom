@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:progress_hud/progress_hud.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:boomenglish/utilite/ZNRequestManager.dart';
@@ -17,24 +17,16 @@ class Login extends StatefulWidget {
 class LoginState extends State<Login> {
   TextEditingController _phoneController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
-
-  ProgressHUD _progressHUD;
-  bool _loading = false;
+  bool _isInAsyncCall = false;
 
   @override
   void initState() {
     super.initState();
-
-    _progressHUD = ProgressHUD(
-      backgroundColor: Colors.transparent,
-      color: Colors.grey,
-      containerColor: Colors.transparent,
-    );
   }
 
   void _login() async {
     setState(() {
-      _loading = true;
+      _isInAsyncCall = true;
     });
     if (_phoneController.text.length != 11) {
       Fluttertoast.showToast(msg: "请输入正确手机号码！");
@@ -52,16 +44,21 @@ class LoginState extends State<Login> {
     };
     ZNResultModel resultModel =
         await ZNRequestManager.post("/v1/account/login/", param);
-    var data = resultModel.data['data'];
-    String token = resultModel.data["access_token"].toString();
-    User user = User.fromJson(data["user"]);
-    UserManager userManager = UserManager();
-    userManager.token = token;
-    userManager.user = user;
     setState(() {
-      _loading = false;
+      _isInAsyncCall = false;
     });
-    Navigator.pop(context);
+    if (resultModel.success) {
+      var data = resultModel.data['data'];
+      String token = resultModel.data["access_token"].toString();
+      User user = User.fromJson(data["user"]);
+      UserManager userManager = UserManager();
+      userManager.token = token;
+      userManager.user = user;
+      Navigator.pop(context);
+    }
+    else {
+      Fluttertoast.showToast(msg: "登录失败", gravity: ToastGravity.CENTER);
+    }
   }
 
   @override
@@ -85,17 +82,17 @@ class LoginState extends State<Login> {
           title: Text('登录'),
         ),
         backgroundColor: Color(0xFFFCD433),
-        body: Stack(
-          children: <Widget>[
-            Column(
-              children: <Widget>[
-                _accountBuilder(),
-                _passwordBuilder(),
-                _loginButtonBuilder(),
-              ],
-            ),
-            _loading ? _progressHUD : Container(),
-          ],
+        body: ModalProgressHUD(
+          child: Column(
+            children: <Widget>[
+              _accountBuilder(),
+              _passwordBuilder(),
+              _loginButtonBuilder(),
+            ],
+          ),
+          inAsyncCall: _isInAsyncCall,
+          opacity: 0,
+          progressIndicator: CircularProgressIndicator(),
         ),
       ),
     );

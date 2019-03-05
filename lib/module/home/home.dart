@@ -41,9 +41,6 @@ class HomeState extends State<Home> {
   }
 
   Future _requestData() async {
-    setState(() {
-      _error = false;
-    });
 
     ZNResultModel resultModel = await ZNRequestManager.get("/v1/home/v5/", {});
     if (resultModel.success) {
@@ -74,71 +71,72 @@ class HomeState extends State<Home> {
     return new MaterialApp(
       theme: new ThemeData(primaryColor: Color(0xffffffff)),
       home: new Scaffold(
-        appBar: new AppBar(
-          elevation: 0.5,
-          title: Text('爆英语'),
-          actions: <Widget>[
-            IconButton(
-                icon: Image.asset(
-                  'assets/images/main_mycourse.png',
-                  width: 16,
-                  height: 18,
-                ),
-                onPressed: () {
-                  Navigator.push(context,
-                      new MaterialPageRoute(builder: (context) => new Login()));
-                }),
-            IconButton(
-                icon: Image.asset(
-                  'assets/images/main_message.png',
-                  width: 18,
-                  height: 18,
-                ),
-                onPressed: () {}),
-          ],
-        ),
-        backgroundColor: Colors.white,
-        body: BoomErrorWidget(
-          show: _error,
-          errorTap: (){
-            setState(() {
-              _isInAsyncCall = true;
-            });
-            _requestData();
-          },
-          child: ModalProgressHUD(
-            child: SmartRefresher(
-              enablePullDown: true,
-              onRefresh: (bool up) async {
-                await _requestData(); // 等待异步操作
-                _refreshController.sendBack(
-                    true, RefreshStatus.completed); // 设置状态为完成
+          appBar: new AppBar(
+            elevation: 0.5,
+            title: Text('爆英语'),
+            actions: <Widget>[
+              IconButton(
+                  icon: Image.asset(
+                    'assets/images/main_mycourse.png',
+                    width: 16,
+                    height: 18,
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        new MaterialPageRoute(
+                            builder: (context) => new Login()));
+                  }),
+              IconButton(
+                  icon: Image.asset(
+                    'assets/images/main_message.png',
+                    width: 18,
+                    height: 18,
+                  ),
+                  onPressed: () {}),
+            ],
+          ),
+          backgroundColor: Colors.white,
+          body: ModalProgressHUD(
+            child: BoomErrorWidget(
+              show: _error,
+              errorTap: () {
+                setState(() {
+                  _isInAsyncCall = true;
+                });
+                _requestData();
               },
-              onOffsetChange: (bool up, double offset) {},
-              headerBuilder: (context, mode) {
-                return new ClassicIndicator(
-                  mode: mode,
-                  height: 45.0,
-                  releaseText: '松开手刷新',
-                  refreshingText: '刷新中',
-                  completeText: '刷新完成',
-                  failedText: '刷新失败',
-                  idleText: '下拉刷新',
-                );
-              },
-              controller: _refreshController, // 控制器
-              child: ListView.builder(
-                padding: EdgeInsets.fromLTRB(0, 0, 0, 15),
-                itemCount: 6 + _recommendCourses.length,
-                itemBuilder: (context, i) => renderRow(i),
+              child: SmartRefresher(
+                enablePullDown: true,
+                onRefresh: (bool up) async {
+                  await _requestData(); // 等待异步操作
+                  _refreshController.sendBack(
+                      true, RefreshStatus.completed); // 设置状态为完成
+                },
+                onOffsetChange: (bool up, double offset) {},
+                headerBuilder: (context, mode) {
+                  return new ClassicIndicator(
+                    mode: mode,
+                    height: 45.0,
+                    releaseText: '松开手刷新',
+                    refreshingText: '刷新中',
+                    completeText: '刷新完成',
+                    failedText: '刷新失败',
+                    idleText: '下拉刷新',
+                  );
+                },
+                controller: _refreshController, // 控制器
+                child: ListView.builder(
+                  padding: EdgeInsets.fromLTRB(0, 0, 0, 15),
+                  itemCount: 6 + _recommendCourses.length,
+                  itemBuilder: (context, i) => renderRow(i),
+                ),
               ),
             ),
             inAsyncCall: _isInAsyncCall,
             opacity: 0,
             progressIndicator: CircularProgressIndicator(),
-          ),
-        ),
-      ),
+          )),
     );
   }
 
