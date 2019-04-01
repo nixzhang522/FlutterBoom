@@ -2,6 +2,14 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'home_banner.g.dart';
 
+List<HomeBanner> getHomeBannerList(List<dynamic> list) {
+  List<HomeBanner> result = [];
+  list.forEach((item) {
+    result.add(HomeBanner.fromJson(item));
+  });
+  return result;
+}
+
 @JsonSerializable()
 class HomeBanner extends Object {
   @JsonKey(name: 'list_image')

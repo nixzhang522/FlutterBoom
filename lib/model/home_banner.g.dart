@@ -25,8 +25,9 @@ Map<String, dynamic> _$HomeBannerToJson(HomeBanner instance) =>
     };
 
 Meta _$MetaFromJson(Map<String, dynamic> json) {
+  String id = json['id'] is int ? json['id'].toString() : json['id'] as String;
   return Meta(
-      json['id'] as String, json['name'] as String, json['image'] as String);
+      id, json['name'] as String, json['image'] as String);
 }
 
 Map<String, dynamic> _$MetaToJson(Meta instance) => <String, dynamic>{

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'package:boomenglish/utilite/ZNRequestManager.dart';
+import 'package:boomenglish/utilite/ZNResultModel.dart';
+
 class WordList extends StatefulWidget {
   @override
   WordListState createState() => new WordListState();
@@ -7,6 +10,8 @@ class WordList extends StatefulWidget {
 
 class WordListState extends State<WordList> {
   List _wordDecks = ["", "", "", "", "", ""];
+  bool _isInAsyncCall = true;
+  bool _error = false;
 
   Widget _buildItem(item) {
     return Card(
@@ -22,6 +27,25 @@ class WordListState extends State<WordList> {
   @override
   void initState() {
     super.initState();
+
+    this._requestData();
+  }
+
+  Future _requestData() async {
+
+    ZNResultModel resultModel = await ZNRequestManager.get("/v1/vocabulary/decks/", {});
+    if (resultModel.success) {
+      var data = resultModel.data['data'];
+      print(data);
+
+      setState(() {
+
+      });
+    }
+    setState(() {
+      _isInAsyncCall = false;
+      _error = !resultModel.success;
+    });
   }
 
   @override
