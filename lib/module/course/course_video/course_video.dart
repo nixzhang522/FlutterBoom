@@ -6,8 +6,8 @@ import 'package:boomenglish/widget/video_controls.dart';
 
 import 'package:boomenglish/widget/teacher.dart';
 
-import 'package:boomenglish/utilite/ZNRequestManager.dart';
-import 'package:boomenglish/utilite/ZNResultModel.dart';
+import 'package:boomenglish/utilite/request_manager.dart';
+import 'package:boomenglish/utilite/result_model.dart';
 import 'package:boomenglish/model/course.dart';
 
 class CourseVideo extends StatefulWidget {
@@ -18,7 +18,7 @@ class CourseVideo extends StatefulWidget {
   final String sceneId;
 
   @override
-  CourseVideoState createState() => new CourseVideoState();
+  CourseVideoState createState() => CourseVideoState();
 }
 
 class CourseVideoState extends State<CourseVideo>
@@ -32,7 +32,7 @@ class CourseVideoState extends State<CourseVideo>
     super.initState();
     initTabData();
 
-    _videoPlaycontroller = new VideoPlayerController.network(
+    _videoPlaycontroller = VideoPlayerController.network(
       'https://cdn-files-prod.boomschool.cn/boom-en-china-prod/scene/1339/video_content_low/OchBWrY-RkebQ1CC8ZLovw==.mp4',
     );
 
@@ -58,13 +58,13 @@ class CourseVideoState extends State<CourseVideo>
         aspectRatio: 16.0 / 9.0,
         autoPlay: false,
         looping: true,
-        materialProgressColors: new ChewieProgressColors(
+        materialProgressColors: ChewieProgressColors(
           playedColor: Colors.red,
           handleColor: Colors.blue,
           backgroundColor: Colors.grey,
           bufferedColor: Colors.lightGreen,
         ),
-        placeholder: new Container(
+        placeholder: Container(
           color: Colors.black,
         ),
         autoInitialize: true,
@@ -84,7 +84,7 @@ class CourseVideoState extends State<CourseVideo>
 
   void _requestData() async {
     // need login
-    // ZNResultModel resultModel = await ZNRequestManager.get(
+    // ResultModel resultModel = await RequestManager.get(
     //     "/v1/scenario/scene/${this.widget.sceneId}/video_subtitle/", {});
     // var data = resultModel.data['data'];
   }
@@ -106,7 +106,7 @@ class CourseVideoState extends State<CourseVideo>
             Column(
               children: <Widget>[
                 Container(
-                  color: new Color(0xffffffff),
+                  color: Color(0xffffffff),
                   height: 44.0,
                   margin: EdgeInsets.fromLTRB(
                       15, _statusBarHeight + videoHeight, 0, 0),

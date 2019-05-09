@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-import 'package:boomenglish/utilite/ZNRequestManager.dart';
-import 'package:boomenglish/utilite/ZNResultModel.dart';
+import 'package:boomenglish/utilite/request_manager.dart';
+import 'package:boomenglish/utilite/result_model.dart';
 import 'package:boomenglish/model/user.dart';
 
 import 'package:boomenglish/help/user_manager.dart';
 
 class Login extends StatefulWidget {
   @override
-  LoginState createState() => new LoginState();
+  LoginState createState() => LoginState();
 }
 
 class LoginState extends State<Login> {
@@ -42,8 +42,8 @@ class LoginState extends State<Login> {
       "country_code": "86",
       "device": {"brand": "apple", "model": "iPhone 6s Plus"}
     };
-    ZNResultModel resultModel =
-        await ZNRequestManager.post("/v1/account/login/", param);
+  ResultModel resultModel =
+        await RequestManager.post("/v1/account/login/", param);
     setState(() {
       _isInAsyncCall = false;
     });
@@ -63,10 +63,10 @@ class LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-      theme: new ThemeData(primaryColor: Color(0xffffffff)),
-      home: new Scaffold(
-        appBar: new AppBar(
+    return MaterialApp(
+      theme: ThemeData(primaryColor: Color(0xffffffff)),
+      home: Scaffold(
+        appBar: AppBar(
           elevation: 0,
           backgroundColor: Colors.transparent,
           leading: GestureDetector(

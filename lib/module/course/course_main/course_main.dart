@@ -1,45 +1,63 @@
 import 'package:flutter/material.dart';
+
+import 'package:boomenglish/utilite/request_manager.dart';
+import 'package:boomenglish/utilite/result_model.dart';
+
 import 'course_list.dart';
 
 class CourseMain extends StatefulWidget {
   @override
-  CourseState createState() => new CourseState();
+  CourseState createState() => CourseState();
 }
 
 class CourseState extends State<CourseMain>
     with SingleTickerProviderStateMixin {
   TabController _tabController;
-  List<String> tabList;
+  List _menus = [];
 
   @override
   void initState() {
     super.initState();
-    initTabData();
+    _requestData();
+
     _tabController = TabController(
-      length: tabList.length,
+      length: _menus.length,
       vsync: this,
     );
   }
 
   @override
   void dispose() {
-    super.dispose();
     _tabController.dispose();
+    super.dispose();
   }
 
-  initTabData() {
-    tabList = ['订阅', '网课', '影视'];
+  Future _requestData() async {
+    ResultModel resultModel =
+        await RequestManager.get("/v1/scenario/catalog_list/", {});
+    var data = resultModel.data['data'];
+    var menus = data["categories"];
+
+    setState(() {
+      _menus = menus;
+    });
+
+    _tabController = TabController(
+      length: _menus.length,
+      vsync: this,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+
     double _statusBarHeight = MediaQuery.of(context).padding.top;
     return Scaffold(
       appBar: null,
       body: Column(
         children: <Widget>[
           Container(
-            color: new Color(0xffffffff),
+            color: Color(0xffffffff),
             height: 44.0,
             margin: EdgeInsets.fromLTRB(15, _statusBarHeight, 0, 0),
             alignment: Alignment.centerLeft,
@@ -55,9 +73,9 @@ class CourseState extends State<CourseMain>
               indicatorWeight: 6,
               indicatorSize: TabBarIndicatorSize.tab,
               indicatorPadding: EdgeInsets.fromLTRB(0, 0, 10, 10),
-              tabs: tabList.map((item) {
+              tabs: _menus.map((item) {
                 return Tab(
-                  text: item,
+                  text: item["name_zh"] ?? '',
                 );
               }).toList(),
             ),
@@ -65,20 +83,10 @@ class CourseState extends State<CourseMain>
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: tabList.map((item) {
-                if (item == "订阅") {
-                  return CourseList(
-                    url: "movie_subscribed",
-                  );
-                } else if (item == "网课") {
-                  return CourseList(
-                    url: "online_class",
-                  );
-                } else {
-                  return CourseList(
-                    url: "movie_class",
-                  );
-                }
+              children: _menus.map((item) {
+                return CourseList(
+                  id: item["id"].toString(),
+                );
               }).toList(),
             ),
           )

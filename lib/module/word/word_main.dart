@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'wordList.dart';
+
+import 'word_list.dart';
 
 class WordMain extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
         title: '单词',
-        theme: new ThemeData(primaryColor: Color(0xffffffff)),
+        theme: ThemeData(primaryColor: Color(0xffffffff)),
         home: Scaffold(
           appBar: AppBar(
             elevation: 0.5,
@@ -16,7 +17,7 @@ class WordMain extends StatelessWidget {
               child: GestureDetector(
             onTap: () {
               Navigator.push(context,
-                  new MaterialPageRoute(builder: (context) => new WordList()));
+                  MaterialPageRoute(builder: (context) => WordList()));
             },
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

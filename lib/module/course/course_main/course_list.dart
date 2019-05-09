@@ -4,27 +4,27 @@ import 'package:boomenglish/widget/course_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:progress_hud/progress_hud.dart';
 
-import 'package:boomenglish/utilite/ZNRequestManager.dart';
-import 'package:boomenglish/utilite/ZNResultModel.dart';
-
+import 'package:boomenglish/utilite/request_manager.dart';
+import 'package:boomenglish/utilite/result_model.dart';
 import 'package:boomenglish/model/course.dart';
 
-import 'package:boomenglish/module/course/courseDetail/course_detail.dart';
+import 'package:boomenglish/module/course/course_detail/course_detail.dart';
 
 class CourseList extends StatefulWidget {
   CourseList({
-    this.url,
+    this.id,
   });
-  final String url;
+  final String id;
 
   @override
-  CourseListState createState() => new CourseListState();
+  CourseListState createState() => CourseListState();
 }
 
 class CourseListState extends State<CourseList>
     with AutomaticKeepAliveClientMixin {
   var _courses = [];
-  var _refreshController = new RefreshController();
+  var _refreshController = RefreshController();
+  var _next;
   ProgressHUD _progressHUD;
   bool _loading = true;
 
@@ -34,7 +34,7 @@ class CourseListState extends State<CourseList>
   @override
   void initState() {
     super.initState();
-    this._requestData();
+    _requestData();
 
     _progressHUD = ProgressHUD(
       backgroundColor: Colors.transparent,
@@ -44,14 +44,14 @@ class CourseListState extends State<CourseList>
   }
 
   Future _requestData() async {
-    ZNResultModel resultModel = await ZNRequestManager.get(
-        "/v1/scenario/catalogs/${this.widget.url}/", {});
+    ResultModel resultModel = await RequestManager.get(
+        "/v1/scenario/catalogs/category/${widget.id}/", {});
     var data = resultModel.data['data'];
-    List courses =
-        data["scenarios"].map((m) => new Course.fromJson(m)).toList();
+    List courses = data["scenarios"].map((m) => Course.fromJson(m)).toList();
 
     setState(() {
       _courses = courses;
+      _next = data["pages"]["next"];
       _loading = false;
     });
   }
@@ -62,24 +62,17 @@ class CourseListState extends State<CourseList>
         ? _progressHUD
         : SmartRefresher(
             enablePullDown: true,
-            onRefresh: (bool up) async {
-              await _requestData(); // 等待异步操作
-              _refreshController.sendBack(
-                  true, RefreshStatus.completed); // 设置状态为完成
-            },
-            onOffsetChange: (bool up, double offset) {},
-            headerBuilder: (context, mode) {
-              return new ClassicIndicator(
-                mode: mode,
-                height: 45.0,
-                releaseText: '松开手刷新',
-                refreshingText: '刷新中',
-                completeText: '刷新完成',
-                failedText: '刷新失败',
-                idleText: '下拉刷新',
-              );
-            },
+            enablePullUp: _next != null,
+            header: WaterDropHeader(),
             controller: _refreshController, // 控制器
+            onRefresh: () async {
+              await _requestData(); // 等待异步操作
+              _refreshController.refreshCompleted(); // 设置状态为完成
+            },
+            onLoading: () {
+              // request more
+              _refreshController.loadComplete();
+            },
             child: ListView.builder(
               padding: EdgeInsets.fromLTRB(0, 0, 0, 15),
               itemCount: _courses.length,
@@ -95,8 +88,8 @@ class CourseListState extends State<CourseList>
       onTap: (scenarioId) {
         Navigator.push(
             context,
-            new MaterialPageRoute(
-                builder: (context) => new CourseDetail(
+            MaterialPageRoute(
+                builder: (context) => CourseDetail(
                       scenarioId: scenarioId,
                     )));
       },

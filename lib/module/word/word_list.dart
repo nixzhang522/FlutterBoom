@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import 'package:boomenglish/utilite/ZNRequestManager.dart';
-import 'package:boomenglish/utilite/ZNResultModel.dart';
+import 'package:boomenglish/utilite/request_manager.dart';
+import 'package:boomenglish/utilite/result_model.dart';
 
 class WordList extends StatefulWidget {
   @override
-  WordListState createState() => new WordListState();
+  WordListState createState() => WordListState();
 }
 
 class WordListState extends State<WordList> {
@@ -33,7 +33,7 @@ class WordListState extends State<WordList> {
 
   Future _requestData() async {
 
-    ZNResultModel resultModel = await ZNRequestManager.get("/v1/vocabulary/decks/", {});
+    ResultModel resultModel = await RequestManager.get("/v1/vocabulary/decks/", {});
     if (resultModel.success) {
       var data = resultModel.data['data'];
       print(data);
@@ -78,13 +78,13 @@ class WordListState extends State<WordList> {
             }).toList(),
           ),
           SliverGrid(
-            gridDelegate: new SliverGridDelegateWithMaxCrossAxisExtent(
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
               maxCrossAxisExtent: 150.0,
               mainAxisSpacing: 10.0,
               crossAxisSpacing: 10.0,
               childAspectRatio: 2.0,
             ),
-            delegate: new SliverChildBuilderDelegate(
+            delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
                 return _buildItem(_wordDecks[index]);
               },

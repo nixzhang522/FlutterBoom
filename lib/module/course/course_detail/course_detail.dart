@@ -4,15 +4,16 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:progress_hud/progress_hud.dart';
 
 import 'package:boomenglish/widget/teacher.dart';
-import 'course_descriptions.dart';
 import 'package:boomenglish/widget/course_episode.dart';
 import 'package:boomenglish/widget/course_episode_content.dart';
 
-import 'package:boomenglish/utilite/ZNRequestManager.dart';
-import 'package:boomenglish/utilite/ZNResultModel.dart';
+import 'package:boomenglish/utilite/request_manager.dart';
+import 'package:boomenglish/utilite/result_model.dart';
 import 'package:boomenglish/model/course.dart';
 
-import 'package:boomenglish/module/course/courseVideo/course_video.dart';
+import 'package:boomenglish/module/course/course_video/course_video.dart';
+
+import 'course_descriptions.dart';
 
 class CourseDetail extends StatefulWidget {
   CourseDetail({
@@ -22,7 +23,7 @@ class CourseDetail extends StatefulWidget {
   final String scenarioId;
 
   @override
-  CourseDetailState createState() => new CourseDetailState();
+  CourseDetailState createState() => CourseDetailState();
 }
 
 class CourseDetailState extends State<CourseDetail>
@@ -65,7 +66,7 @@ class CourseDetailState extends State<CourseDetail>
   }
 
   void _requestData() async {
-    ZNResultModel resultModel = await ZNRequestManager.get(
+    ResultModel resultModel = await RequestManager.get(
         "/v1/scenario/scenario/${this.widget.scenarioId}/", {});
     var data = resultModel.data['data'];
     Course course = Course.fromJson(data["scenario"]);
@@ -102,8 +103,8 @@ class CourseDetailState extends State<CourseDetail>
               onTap: (sceneId) {
                 Navigator.push(
                     context,
-                    new MaterialPageRoute(
-                        builder: (context) => new CourseVideo(
+                    MaterialPageRoute(
+                        builder: (context) => CourseVideo(
                               sceneId: sceneId,
                             )));
               },
@@ -228,7 +229,7 @@ class CourseDetailState extends State<CourseDetail>
             ),
           ),
           Container(
-            color: new Color(0xffffffff),
+            color: Color(0xffffffff),
             height: 44.0,
             margin: EdgeInsets.fromLTRB(15, 0, 0, 0),
             alignment: Alignment.centerLeft,

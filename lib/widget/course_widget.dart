@@ -68,7 +68,7 @@ class CourseWidget extends StatelessWidget {
                             Container(
                               padding: EdgeInsets.fromLTRB(16, 10, 10, 0),
                               child: Text(
-                                course.nameZh,
+                                course.nameZh ?? '',
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
@@ -80,7 +80,7 @@ class CourseWidget extends StatelessWidget {
                             Container(
                               padding: EdgeInsets.fromLTRB(16, 4, 0, 0),
                               child: Text(
-                                "更新至第${course.episodeCnt}集",
+                                "更新至第${course.episodeCnt ?? '0'}集",
                                 style: TextStyle(
                                     fontSize: 13, color: Color(0xff808080)),
                               ),
@@ -134,7 +134,7 @@ class CourseWidget extends StatelessWidget {
                               Padding(
                                 padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
                                 child: Text(
-                                  course.user.nickname,
+                                  course.user.nickname ?? '',
                                   style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w700,

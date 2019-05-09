@@ -16,13 +16,13 @@ HomeBanner _$HomeBannerFromJson(Map<String, dynamic> json) {
       json['sortorder'] as int);
 }
 
-Map<String, dynamic> _$HomeBannerToJson(HomeBanner instance) =>
-    <String, dynamic>{
-      'list_image': instance.listImage,
-      'action': instance.action,
-      'meta': instance.meta,
-      'sortorder': instance.sortorder
-    };
+// Map<String, dynamic> _$HomeBannerToJson(HomeBanner instance) =>
+//     <String, dynamic>{
+//       'list_image': instance.listImage,
+//       'action': instance.action,
+//       'meta': instance.meta,
+//       'sortorder': instance.sortorder
+//     };
 
 Meta _$MetaFromJson(Map<String, dynamic> json) {
   String id = json['id'] is int ? json['id'].toString() : json['id'] as String;
@@ -30,8 +30,8 @@ Meta _$MetaFromJson(Map<String, dynamic> json) {
       id, json['name'] as String, json['image'] as String);
 }
 
-Map<String, dynamic> _$MetaToJson(Meta instance) => <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
-      'image': instance.image
-    };
+// Map<String, dynamic> _$MetaToJson(Meta instance) => <String, dynamic>{
+//       'id': instance.id,
+//       'name': instance.name,
+//       'image': instance.image
+//     };

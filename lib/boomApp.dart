@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 
 import 'package:boomenglish/module/home/home.dart';
-import 'package:boomenglish/module/course/courseMain/course_main.dart';
-import 'package:boomenglish/module/word/wordMain.dart';
+import 'package:boomenglish/module/course/course_main/course_main.dart';
+import 'package:boomenglish/module/word/word_main.dart';
 import 'package:boomenglish/module/mine/mine.dart';
 
 class BoomApp extends StatefulWidget {
   @override
-  BoomAppState createState() => new BoomAppState();
+  BoomAppState createState() => BoomAppState();
 }
 
 class BoomAppState extends State<BoomApp> {
   int _selectedIndex = 0;
   var _pages;
-  var tabImages;
-  var appBarTitles = ['首页', '课程', '单词', '我的'];
+  var _tabImages;
+  var _appBarTitles = ['首页', '课程', '单词', '我的'];
 
   @override
   void initState() {
@@ -23,7 +23,7 @@ class BoomAppState extends State<BoomApp> {
   }
 
   void initData() {
-    tabImages = [
+    _tabImages = [
       [
         getTabImage('assets/images/TabBar_Home_Normal.png'),
         getTabImage('assets/images/TabBar_Home_Selected.png')
@@ -42,27 +42,27 @@ class BoomAppState extends State<BoomApp> {
       ]
     ];
 
-    _pages = [new Home(), new CourseMain(), new WordMain(), new Mine()];
+    _pages = [Home(), CourseMain(), WordMain(), Mine()];
   }
 
   Image getTabImage(path) {
-    return new Image.asset(path, width: 20.0, height: 20.0);
+    return Image.asset(path, width: 20.0, height: 20.0);
   }
 
   Image getTabIcon(int curIndex) {
     if (curIndex == _selectedIndex) {
-      return tabImages[curIndex][1];
+      return _tabImages[curIndex][1];
     }
-    return tabImages[curIndex][0];
+    return _tabImages[curIndex][0];
   }
 
   Text getTabTitle(int curIndex) {
     if (curIndex == _selectedIndex) {
-      return new Text(appBarTitles[curIndex],
-          style: new TextStyle(color: const Color(0xff222626)));
+      return Text(_appBarTitles[curIndex],
+          style: TextStyle(color: const Color(0xff222626)));
     } else {
-      return new Text(appBarTitles[curIndex],
-          style: new TextStyle(color: const Color(0xff222626)));
+      return Text(_appBarTitles[curIndex],
+          style: TextStyle(color: const Color(0xff222626)));
     }
   }
 
@@ -74,22 +74,22 @@ class BoomAppState extends State<BoomApp> {
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       theme: ThemeData(scaffoldBackgroundColor: Color(0xffffffff)),
-      home: new Scaffold(
+      home: Scaffold(
         body: IndexedStack(  //重载解决办法
           index: _selectedIndex,
           children: _pages,
         ),
-        bottomNavigationBar: new BottomNavigationBar(
+        bottomNavigationBar: BottomNavigationBar(
           items: [
-            new BottomNavigationBarItem(
+            BottomNavigationBarItem(
                 icon: getTabIcon(0), title: getTabTitle(0)),
-            new BottomNavigationBarItem(
+            BottomNavigationBarItem(
                 icon: getTabIcon(1), title: getTabTitle(1)),
-            new BottomNavigationBarItem(
+            BottomNavigationBarItem(
                 icon: getTabIcon(2), title: getTabTitle(2)),
-            new BottomNavigationBarItem(
+            BottomNavigationBarItem(
                 icon: getTabIcon(3), title: getTabTitle(3)),
           ],
           type: BottomNavigationBarType.fixed,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
@@ -6,18 +7,18 @@ import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:boomenglish/widget/error.dart';
 import 'package:boomenglish/widget/course_widget.dart';
 
-import 'package:boomenglish/utilite/ZNRequestManager.dart';
-import 'package:boomenglish/utilite/ZNResultModel.dart';
+import 'package:boomenglish/utilite/request_manager.dart';
+import 'package:boomenglish/utilite/result_model.dart';
 
 import 'package:boomenglish/model/home_banner.dart';
 import 'package:boomenglish/model/course.dart';
 
-import 'package:boomenglish/module/course/courseDetail/course_detail.dart';
+import 'package:boomenglish/module/course/course_detail/course_detail.dart';
 import 'package:boomenglish/module/login/login.dart';
 
 class Home extends StatefulWidget {
   @override
-  HomeState createState() => new HomeState();
+  HomeState createState() => HomeState();
 }
 
 class HomeState extends State<Home> {
@@ -30,7 +31,7 @@ class HomeState extends State<Home> {
     {"icon": "assets/images/main_story.png", "title": "故事对白"},
     {"icon": "assets/images/main_dub.png", "title": "最新配音"},
   ];
-  var _refreshController = new RefreshController();
+  var _refreshController = RefreshController();
   bool _isInAsyncCall = true;
   bool _error = false;
 
@@ -41,18 +42,16 @@ class HomeState extends State<Home> {
   }
 
   Future _requestData() async {
-
-    ZNResultModel resultModel = await ZNRequestManager.get("/v1/home/v5/", {});
+    ResultModel resultModel = await RequestManager.get("/v1/home/v5/", {});
     if (resultModel.success) {
       var data = resultModel.data['data'];
 
       List banners =
-          data["banners"].map((m) => new HomeBanner.fromJson(m)).toList();
+          data["banners"].map((m) => HomeBanner.fromJson(m)).toList();
       List hotCourses =
-          data["hot_scenarios"].map((m) => new Course.fromJson(m)).toList();
-      List recommendCourses = data["recommended_scenarios"]
-          .map((m) => new Course.fromJson(m))
-          .toList();
+          data["hot_scenarios"].map((m) => Course.fromJson(m)).toList();
+      List recommendCourses =
+          data["recommended_scenarios"].map((m) => Course.fromJson(m)).toList();
 
       setState(() {
         _banners = banners;
@@ -68,10 +67,10 @@ class HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-      theme: new ThemeData(primaryColor: Color(0xffffffff)),
-      home: new Scaffold(
-          appBar: new AppBar(
+    return MaterialApp(
+      theme: ThemeData(primaryColor: Color(0xffffffff)),
+      home: Scaffold(
+          appBar: AppBar(
             elevation: 0.5,
             title: Text('爆英语'),
             actions: <Widget>[
@@ -82,10 +81,8 @@ class HomeState extends State<Home> {
                     height: 18,
                   ),
                   onPressed: () {
-                    Navigator.push(
-                        context,
-                        new MaterialPageRoute(
-                            builder: (context) => new Login()));
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Login()));
                   }),
               IconButton(
                   icon: Image.asset(
@@ -108,24 +105,13 @@ class HomeState extends State<Home> {
               },
               child: SmartRefresher(
                 enablePullDown: true,
-                onRefresh: (bool up) async {
-                  await _requestData(); // 等待异步操作
-                  _refreshController.sendBack(
-                      true, RefreshStatus.completed); // 设置状态为完成
-                },
-                onOffsetChange: (bool up, double offset) {},
-                headerBuilder: (context, mode) {
-                  return new ClassicIndicator(
-                    mode: mode,
-                    height: 45.0,
-                    releaseText: '松开手刷新',
-                    refreshingText: '刷新中',
-                    completeText: '刷新完成',
-                    failedText: '刷新失败',
-                    idleText: '下拉刷新',
-                  );
-                },
+                enablePullUp: false,
+                header: WaterDropHeader(),
                 controller: _refreshController, // 控制器
+                onRefresh: () async {
+                  await _requestData();
+                  _refreshController.refreshCompleted(); // 等待异步操作
+                },
                 child: ListView.builder(
                   padding: EdgeInsets.fromLTRB(0, 0, 0, 15),
                   itemCount: 6 + _recommendCourses.length,
@@ -156,11 +142,11 @@ class HomeState extends State<Home> {
       double itemWidth = (width - 15 * 2 - 10) / 2.0;
       double ratio = itemWidth / 60;
 
-      return new Container(
+      return Container(
         height: 130,
-        margin: new EdgeInsets.fromLTRB(15, 15, 15, 0),
-        child: new GridView.builder(
-          physics: new NeverScrollableScrollPhysics(),
+        margin: EdgeInsets.fromLTRB(15, 15, 15, 0),
+        child: GridView.builder(
+          physics: NeverScrollableScrollPhysics(),
           padding: EdgeInsets.all(0),
           gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
             maxCrossAxisExtent: itemWidth,
@@ -170,16 +156,16 @@ class HomeState extends State<Home> {
           ),
           itemCount: _module.length,
           itemBuilder: (context, i) {
-            return new Container(
+            return Container(
               decoration: BoxDecoration(
                 color: Color(0xfffbfbfb),
-                borderRadius: BorderRadius.all(new Radius.circular(3)),
+                borderRadius: BorderRadius.all(Radius.circular(3)),
               ),
-              child: new Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  new Image.asset(_module[i]["icon"], width: 27, height: 27),
-                  new Container(
+                  Image.asset(_module[i]["icon"], width: 27, height: 27),
+                  Container(
                     margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
                     child: Text(_module[i]["title"]),
                   ),
@@ -201,11 +187,11 @@ class HomeState extends State<Home> {
       double itemWidth = (width - 10 * 2 - 10) / 2.0;
       double itemHeight = itemWidth * 7 / 11.0 + 80;
       double ratio = itemWidth / itemHeight;
-      return new Container(
+      return Container(
         height: itemHeight * 2 + 40,
-        padding: new EdgeInsets.fromLTRB(10, 10, 10, 0),
-        child: new GridView.builder(
-          physics: new NeverScrollableScrollPhysics(),
+        padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+        child: GridView.builder(
+          physics: NeverScrollableScrollPhysics(),
           padding: EdgeInsets.all(0),
           gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
             maxCrossAxisExtent: itemWidth,
@@ -229,8 +215,8 @@ class HomeState extends State<Home> {
       onTap: (scenarioId) {
         Navigator.push(
             context,
-            new MaterialPageRoute(
-                builder: (context) => new CourseDetail(
+            MaterialPageRoute(
+                builder: (context) => CourseDetail(
                       scenarioId: scenarioId,
                     )));
       },
@@ -241,15 +227,15 @@ class HomeState extends State<Home> {
     Size screenSize = MediaQuery.of(context).size;
     double screenWidth = screenSize.width;
     double height = (screenWidth - 30) * 145.0 / 345.0;
-    return new Container(
+    return Container(
         height: height,
-        margin: new EdgeInsets.fromLTRB(15, 15, 15, 0),
-        child: new ClipRRect(
-          borderRadius: BorderRadius.all(new Radius.circular(6)),
+        margin: EdgeInsets.fromLTRB(15, 15, 15, 0),
+        child: ClipRRect(
+          borderRadius: BorderRadius.all(Radius.circular(6)),
           child: Swiper(
             itemBuilder: _swiperBuilder,
             itemCount: _banners.length,
-            pagination: new SwiperPagination(
+            pagination: SwiperPagination(
                 alignment: Alignment.bottomRight,
                 builder: DotSwiperPaginationBuilder(
                   color: Colors.white30,
@@ -272,30 +258,30 @@ class HomeState extends State<Home> {
   }
 
   Widget _drawBuilder() {
-    return new Container(
+    return Container(
       height: 52,
-      margin: new EdgeInsets.fromLTRB(15, 15, 15, 0),
-      child: new Row(
+      margin: EdgeInsets.fromLTRB(15, 15, 15, 0),
+      child: Row(
         children: <Widget>[
-          new Container(
-            child: new Image.asset(
+          Container(
+            child: Image.asset(
               'assets/images/main_draw.png',
               width: 30,
               height: 30,
             ),
-            margin: new EdgeInsets.fromLTRB(16, 0, 10, 0),
+            margin: EdgeInsets.fromLTRB(16, 0, 10, 0),
           ),
-          new Text('打卡赢抽奖',
+          Text('打卡赢抽奖',
               style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18)),
         ],
       ),
-      decoration: new BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: new BorderRadius.all(new Radius.circular(6)),
+        borderRadius: BorderRadius.all(Radius.circular(6)),
         boxShadow: <BoxShadow>[
-          new BoxShadow(
+          BoxShadow(
             color: const Color.fromRGBO(0, 0, 0, 0.1),
-            offset: new Offset(0.0, 0.0),
+            offset: Offset(0.0, 0.0),
             blurRadius: 5.0,
           ),
         ],
@@ -304,24 +290,24 @@ class HomeState extends State<Home> {
   }
 
   Widget _courseCategoryBuilder(String name, String tagline, bool more) {
-    return new Container(
+    return Container(
       height: 50,
-      margin: new EdgeInsets.fromLTRB(15, 10, 15, 0),
-      child: new Row(
+      margin: EdgeInsets.fromLTRB(15, 10, 15, 0),
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          new Column(
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              new Text(
+              Text(
                 name ?? "",
-                style: new TextStyle(
+                style: TextStyle(
                     fontSize: 18,
                     height: 1.2,
                     fontWeight: FontWeight.w700,
                     color: Color(0xff222626)),
               ),
-              new Text(tagline ?? "",
+              Text(tagline ?? "",
                   style: TextStyle(
                     fontSize: 12,
                     color: Color(0xff808080),
@@ -329,7 +315,7 @@ class HomeState extends State<Home> {
             ],
           ),
           more
-              ? new Image.asset(
+              ? Image.asset(
                   "assets/images/arrow.png",
                   width: 14,
                   height: 14,
@@ -349,8 +335,8 @@ class HomeState extends State<Home> {
       onTap: () {
         Navigator.push(
             this.context,
-            new MaterialPageRoute(
-                builder: (context) => new CourseDetail(
+            MaterialPageRoute(
+                builder: (context) => CourseDetail(
                       scenarioId: course.id.toString(),
                     )));
       },
@@ -358,11 +344,11 @@ class HomeState extends State<Home> {
         margin: EdgeInsets.fromLTRB(5, 5, 5, 0),
         decoration: BoxDecoration(
           color: Color(0xffffffff),
-          borderRadius: BorderRadius.all(new Radius.circular(6)),
+          borderRadius: BorderRadius.all(Radius.circular(6)),
           boxShadow: <BoxShadow>[
-            new BoxShadow(
+            BoxShadow(
               color: const Color.fromRGBO(0, 0, 0, 0.1),
-              offset: new Offset(0.0, 0.0),
+              offset: Offset(0.0, 0.0),
               blurRadius: 5.0,
             ),
           ],

@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 
 class Mine extends StatefulWidget {
   @override
-  MovieState createState() => new MovieState();
+  MovieState createState() => MovieState();
 }
 
 class MovieState extends State<Mine> {
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-      theme: new ThemeData(primaryColor: Color(0xffffffff)),
-      home: new Scaffold(
-        appBar: new AppBar(
-          title: new Text("我的"),
+    return MaterialApp(
+      theme: ThemeData(primaryColor: Color(0xffffffff)),
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text("我的"),
           elevation: 0.5,
         ),
-        body: new Center(
-          child: new Text('user center'),
+        body: Center(
+          child: Text('user center'),
         ),
       ),
     );

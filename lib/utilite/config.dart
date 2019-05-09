@@ -1,3 +1,3 @@
-class ZNConfig {
+class Config {
   static bool debug = true;
 }

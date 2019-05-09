@@ -1,4 +1,4 @@
-class ZNResultCode {
+class ResultCode {
   ///网络错误
   static const NETWORK_ERROR = -1;
 

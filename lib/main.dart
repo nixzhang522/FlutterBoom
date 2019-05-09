@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 import 'boomApp.dart';
 
-void main() => runApp(new MyApp());
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-      home: new BoomApp(),
+    return MaterialApp(
+      home: BoomApp(),
     );
   }
 }

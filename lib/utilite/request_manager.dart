@@ -1,17 +1,17 @@
+import 'dart:collection';
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:crypto/crypto.dart';
 
 import 'package:boomenglish/help/user_manager.dart';
 
-import 'dart:collection';
-import 'dart:convert';
+import 'config.dart';
+import 'result_model.dart';
+import 'result_code.dart';
 
-import 'ZNConfig.dart';
-import 'ZNResultModel.dart';
-import 'ZNResultCode.dart';
-
-class ZNRequestManager {
+class RequestManager {
   static String baseUrl = "https://api-stage-en.boomschool.cn:446/app";
   static Map<String, String> baseHeaders = {
     "V": "2.2.0",
@@ -22,30 +22,30 @@ class ZNRequestManager {
   static const CONTENT_TYPE_FORM = "application/x-www-form-urlencoded";
 
   static get(url, params, {noTip = false}) async {
-    Options option = new Options(method: "GET");
+    Options option = Options(method: "GET");
     return await requestBase(url, params, baseHeaders, option, noTip: noTip);
   }
 
   static post(url, params, {noTip = false}) async {
-    Options option = new Options(method: "POST");
+    Options option = Options(method: "POST");
     return await requestBase(url, params, baseHeaders, option, noTip: noTip);
   }
 
   static requestBase(url, params, Map<String, String> header, Options option,
       {noTip = false}) async {
     // 判断网络
-    var connectivityResult = await (new Connectivity().checkConnectivity());
+    var connectivityResult = await Connectivity().checkConnectivity();
     if (connectivityResult == ConnectivityResult.mobile) {
     } else if (connectivityResult == ConnectivityResult.wifi) {
     } else if (connectivityResult == ConnectivityResult.none) {
-      return ZNResultModel(
-          ZNResultErrorEvent(ZNResultCode.NETWORK_ERROR, "请检查网络"),
+      return ResultModel(
+          ResultErrorEvent(ResultCode.NETWORK_ERROR, "请检查网络"),
           false,
-          ZNResultCode.NETWORK_ERROR);
+          ResultCode.NETWORK_ERROR);
     }
 
     //处理请求头
-    Map<String, String> headers = new HashMap();
+    Map<String, String> headers = HashMap();
 
     String path = '/app' + url;
     int seconds = (DateTime.now().millisecondsSinceEpoch / 1000).floor();
@@ -71,7 +71,7 @@ class ZNRequestManager {
     option.headers = headers;
     option.connectTimeout = 15000;
 
-    var dio = new Dio(BaseOptions(baseUrl: baseUrl));
+    var dio = Dio(BaseOptions(baseUrl: baseUrl));
     Response response;
     try {
       response = await dio.request(url, data: params, options: option);
@@ -81,29 +81,29 @@ class ZNRequestManager {
       if (error.response != null) {
         errorResponse = error.response;
       } else {
-        errorResponse = new Response(statusCode: 666);
+        errorResponse = Response(statusCode: 666);
       }
       // 超时
       if (error.type == DioErrorType.CONNECT_TIMEOUT) {
-        errorResponse.statusCode = ZNResultCode.NETWORK_TIMEOUT;
+        errorResponse.statusCode = ResultCode.NETWORK_TIMEOUT;
       }
       // debug模式才打印
-      if (ZNConfig.debug) {
+      if (Config.debug) {
         print('请求异常: ' + error.toString());
         print('请求异常url: ' + url);
         print('请求参数：' + params.toString());
         print('请求头: ' + option.headers.toString());
         print('method: ' + option.method);
       }
-      return new ZNResultModel(
-          ZNResultCode.errorHandleFunction(
+      return ResultModel(
+          ResultCode.errorHandleFunction(
               errorResponse.statusCode, error.message, noTip),
           false,
           errorResponse.statusCode);
     }
 
     // debug模式打印相关数据
-    if (ZNConfig.debug) {
+    if (Config.debug) {
       print('请求url: ' + url);
       print('请求头: ' + option.headers.toString());
       if (params != null) {
@@ -116,15 +116,15 @@ class ZNRequestManager {
 
     try {
       if (response.statusCode == 200) {
-        return new ZNResultModel(response.data, true, ZNResultCode.SUCCESS,
+        return ResultModel(response.data, true, ResultCode.SUCCESS,
             headers: response.headers);
       }
     } catch (error) {
-      return new ZNResultModel(response.data, false, response.statusCode,
+      return ResultModel(response.data, false, response.statusCode,
           headers: response.headers);
     }
-    return new ZNResultModel(
-        ZNResultCode.errorHandleFunction(response.statusCode, "", noTip),
+    return ResultModel(
+        ResultCode.errorHandleFunction(response.statusCode, "", noTip),
         false,
         response.statusCode,
         headers: response.headers);
