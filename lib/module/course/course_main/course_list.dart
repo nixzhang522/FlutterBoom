@@ -58,6 +58,7 @@ class CourseListState extends State<CourseList>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return _loading
         ? _progressHUD
         : SmartRefresher(

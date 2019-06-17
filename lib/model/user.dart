@@ -31,17 +31,17 @@ class User extends Object {
   @JsonKey(name: 'current_deck_id')
   String currentDeckId;
 
-  @JsonKey(name: 'study_plans')
-  Study_plans studyPlans;
+  @JsonKey(name: 'StudyPlans')
+  StudyPlans studyPlans;
 
   @JsonKey(name: 'study_prefs')
-  Study_prefs studyPrefs;
+  StudyPrefs studyPrefs;
 
   @JsonKey(name: 'study_reasons')
-  Study_reasons studyReasons;
+  StudyReasons studyReasons;
 
   @JsonKey(name: 'study_interests')
-  Study_interests studyInterests;
+  StudyInterests studyInterests;
 
   @JsonKey(name: 'shipping_addresses')
   List<dynamic> shippingAddresses;
@@ -140,7 +140,7 @@ class User extends Object {
 }
 
 @JsonSerializable()
-class Study_plans extends Object {
+class StudyPlans extends Object {
   @JsonKey(name: 'mission_challenged')
   int missionChallenged;
 
@@ -156,7 +156,7 @@ class Study_plans extends Object {
   @JsonKey(name: 'vocab_review')
   int vocabReview;
 
-  Study_plans(
+  StudyPlans(
     this.missionChallenged,
     this.studyMin,
     this.vocabAdd,
@@ -164,12 +164,12 @@ class Study_plans extends Object {
     this.vocabReview,
   );
 
-  factory Study_plans.fromJson(Map<String, dynamic> srcJson) =>
-      _$Study_plansFromJson(srcJson);
+  factory StudyPlans.fromJson(Map<String, dynamic> srcJson) =>
+      _$StudyPlansFromJson(srcJson);
 }
 
 @JsonSerializable()
-class Study_prefs extends Object {
+class StudyPrefs extends Object {
   @JsonKey(name: 'listen')
   bool listen;
 
@@ -182,19 +182,19 @@ class Study_prefs extends Object {
   @JsonKey(name: 'write')
   bool write;
 
-  Study_prefs(
+  StudyPrefs(
     this.listen,
     this.read,
     this.speak,
     this.write,
   );
 
-  factory Study_prefs.fromJson(Map<String, dynamic> srcJson) =>
-      _$Study_prefsFromJson(srcJson);
+  factory StudyPrefs.fromJson(Map<String, dynamic> srcJson) =>
+      _$StudyPrefsFromJson(srcJson);
 }
 
 @JsonSerializable()
-class Study_reasons extends Object {
+class StudyReasons extends Object {
   @JsonKey(name: 'abroad')
   bool abroad;
 
@@ -207,19 +207,19 @@ class Study_reasons extends Object {
   @JsonKey(name: 'work')
   bool work;
 
-  Study_reasons(
+  StudyReasons(
     this.abroad,
     this.exam,
     this.fun,
     this.work,
   );
 
-  factory Study_reasons.fromJson(Map<String, dynamic> srcJson) =>
-      _$Study_reasonsFromJson(srcJson);
+  factory StudyReasons.fromJson(Map<String, dynamic> srcJson) =>
+      _$StudyReasonsFromJson(srcJson);
 }
 
 @JsonSerializable()
-class Study_interests extends Object {
+class StudyInterests extends Object {
   @JsonKey(name: 'business')
   bool business;
 
@@ -262,7 +262,7 @@ class Study_interests extends Object {
   @JsonKey(name: 'travel')
   bool travel;
 
-  Study_interests(
+  StudyInterests(
     this.business,
     this.design,
     this.entertainment,
@@ -279,6 +279,6 @@ class Study_interests extends Object {
     this.travel,
   );
 
-  factory Study_interests.fromJson(Map<String, dynamic> srcJson) =>
-      _$Study_interestsFromJson(srcJson);
+  factory StudyInterests.fromJson(Map<String, dynamic> srcJson) =>
+      _$StudyInterestsFromJson(srcJson);
 }
