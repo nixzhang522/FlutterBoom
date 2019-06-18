@@ -9,11 +9,13 @@ import 'package:boomenglish/widget/course_widget.dart';
 
 import 'package:boomenglish/utilite/request_manager.dart';
 import 'package:boomenglish/utilite/result_model.dart';
+import 'package:boomenglish/help/user_manager.dart';
 
 import 'package:boomenglish/model/home_banner.dart';
 import 'package:boomenglish/model/course.dart';
 
 import 'package:boomenglish/module/course/course_detail/course_detail.dart';
+import 'package:boomenglish/module/course/course_subscribed/course_subscribed.dart';
 import 'package:boomenglish/module/login/login.dart';
 
 class Home extends StatefulWidget {
@@ -25,7 +27,7 @@ class HomeState extends State<Home> {
   List _banners = [];
   List _hotCourses = [];
   List _recommendCourses = [];
-  var _module = [
+  var _modules = [
     {"icon": "assets/images/main_video.png", "title": "新闻资讯"},
     {"icon": "assets/images/main_audio.png", "title": "音频资讯"},
     {"icon": "assets/images/main_story.png", "title": "故事对白"},
@@ -65,8 +67,33 @@ class HomeState extends State<Home> {
     });
   }
 
+  void _joinMyCourses() {
+    if (UserManager().isLogin) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => CourseSubscribedList()));
+    } else {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => Login()));
+    }
+  }
+
+  void _joinCourseDetail(scenarioId) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => CourseDetail(
+                  scenarioId: scenarioId,
+                )));
+  }
+
   @override
   Widget build(BuildContext context) {
+    Size screenSize = MediaQuery.of(context).size;
+    double width = screenSize.width;
+    double itemWidth = (width - 15 * 2 - 10) / 2.0;
+    double ratio = itemWidth / 60;
+
+    double hotItemHeight = itemWidth * 7 / 11.0 + 80;
+    double hotRatio = itemWidth / hotItemHeight;
+
     return MaterialApp(
       theme: ThemeData(primaryColor: Color(0xffffffff)),
       home: Scaffold(
@@ -80,10 +107,7 @@ class HomeState extends State<Home> {
                     width: 16,
                     height: 18,
                   ),
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Login()));
-                  }),
+                  onPressed: _joinMyCourses),
               IconButton(
                   icon: Image.asset(
                     'assets/images/main_message.png',
@@ -112,10 +136,73 @@ class HomeState extends State<Home> {
                   await _requestData();
                   _refreshController.refreshCompleted(); // 等待异步操作
                 },
-                child: ListView.builder(
-                  padding: EdgeInsets.fromLTRB(0, 0, 0, 15),
-                  itemCount: 6 + _recommendCourses.length,
-                  itemBuilder: (context, i) => renderRow(i),
+                child: CustomScrollView(
+                  slivers: <Widget>[
+                    SliverToBoxAdapter(
+                      child: _bannerBuilder(),
+                    ),
+                    SliverToBoxAdapter(
+                      child: _drawBuilder(),
+                    ),
+                    SliverPadding(
+                      padding: EdgeInsets.all(15),
+                      sliver: SliverGrid(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            mainAxisSpacing: 10,
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 10,
+                            childAspectRatio: ratio,
+                          ),
+                          delegate: SliverChildBuilderDelegate(
+                            (BuildContext context, int index) {
+                              return Container(
+                                child: _moduleBuilder(_modules[index]),
+                              );
+                            },
+                            childCount: _modules.length,
+                          )),
+                    ),
+                    SliverToBoxAdapter(
+                      child:
+                          _courseCategoryBuilder('热门课程', '大家喜欢的课程在这里', false),
+                    ),
+                    SliverPadding(
+                      padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
+                      sliver: SliverGrid(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            mainAxisSpacing: 10,
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 10,
+                            childAspectRatio: hotRatio,
+                          ),
+                          delegate: SliverChildBuilderDelegate(
+                            (BuildContext context, int index) {
+                              return _hotCourseBuilder(context, index);
+                            },
+                            childCount: _hotCourses.length,
+                          )),
+                    ),
+                    SliverToBoxAdapter(
+                      child:
+                          _courseCategoryBuilder('推荐课程', '为你量身定做的课程在这里', true),
+                    ),
+                    SliverPadding(
+                      padding: EdgeInsets.fromLTRB(0, 0, 0, 16),
+                      sliver: SliverFixedExtentList(
+                          itemExtent: 175.0,
+                          delegate: SliverChildBuilderDelegate(
+                              (BuildContext context, int index) {
+                            return CourseWidget(
+                              course: _recommendCourses[index],
+                              onTap: (scenarioId) {
+                                _joinCourseDetail(scenarioId);
+                              },
+                            );
+                          }, childCount: _recommendCourses.length)),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -123,103 +210,6 @@ class HomeState extends State<Home> {
             opacity: 0,
             progressIndicator: CircularProgressIndicator(),
           )),
-    );
-  }
-
-  Widget renderRow(i) {
-    // banner
-    if (i == 0) {
-      return _bannerBuilder();
-    }
-    // draw
-    if (i == 1) {
-      return _drawBuilder();
-    }
-    // module
-    if (i == 2) {
-      Size screenSize = MediaQuery.of(context).size;
-      double width = screenSize.width;
-      double itemWidth = (width - 15 * 2 - 10) / 2.0;
-      double ratio = itemWidth / 60;
-
-      return Container(
-        height: 130,
-        margin: EdgeInsets.fromLTRB(15, 15, 15, 0),
-        child: GridView.builder(
-          physics: NeverScrollableScrollPhysics(),
-          padding: EdgeInsets.all(0),
-          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: itemWidth,
-            mainAxisSpacing: 10,
-            crossAxisSpacing: 10,
-            childAspectRatio: ratio,
-          ),
-          itemCount: _module.length,
-          itemBuilder: (context, i) {
-            return Container(
-              decoration: BoxDecoration(
-                color: Color(0xfffbfbfb),
-                borderRadius: BorderRadius.all(Radius.circular(3)),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Image.asset(_module[i]["icon"], width: 27, height: 27),
-                  Container(
-                    margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                    child: Text(_module[i]["title"]),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-      );
-    }
-    // hot course title
-    if (i == 3) {
-      return _courseCategoryBuilder('热门课程', '大家喜欢的课程在这里', false);
-    }
-    // hot course
-    if (i == 4) {
-      Size screenSize = MediaQuery.of(context).size;
-      double width = screenSize.width;
-      double itemWidth = (width - 10 * 2 - 10) / 2.0;
-      double itemHeight = itemWidth * 7 / 11.0 + 80;
-      double ratio = itemWidth / itemHeight;
-      return Container(
-        height: itemHeight * 2 + 40,
-        padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-        child: GridView.builder(
-          physics: NeverScrollableScrollPhysics(),
-          padding: EdgeInsets.all(0),
-          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: itemWidth,
-            mainAxisSpacing: 10,
-            crossAxisSpacing: 10,
-            childAspectRatio: ratio,
-          ),
-          itemCount: _hotCourses.length,
-          itemBuilder: _hotCourseBuilder,
-        ),
-      );
-    }
-    // recommend course title
-    if (i == 5) {
-      return _courseCategoryBuilder('推荐课程', '为你量身定做的课程在这里', true);
-    }
-    // recommend course
-    Course course = _recommendCourses[i - 6];
-    return CourseWidget(
-      course: course,
-      onTap: (scenarioId) {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => CourseDetail(
-                      scenarioId: scenarioId,
-                    )));
-      },
     );
   }
 
@@ -289,6 +279,25 @@ class HomeState extends State<Home> {
     );
   }
 
+  Widget _moduleBuilder(module) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Color(0xfffbfbfb),
+        borderRadius: BorderRadius.all(Radius.circular(3)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Image.asset(module["icon"], width: 27, height: 27),
+          Container(
+            margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
+            child: Text(module["title"]),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _courseCategoryBuilder(String name, String tagline, bool more) {
     return Container(
       height: 50,
@@ -333,15 +342,9 @@ class HomeState extends State<Home> {
     Course course = _hotCourses[index];
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-            this.context,
-            MaterialPageRoute(
-                builder: (context) => CourseDetail(
-                      scenarioId: course.id.toString(),
-                    )));
+        _joinCourseDetail(course.id.toString());
       },
       child: Container(
-        margin: EdgeInsets.fromLTRB(5, 5, 5, 0),
         decoration: BoxDecoration(
           color: Color(0xffffffff),
           borderRadius: BorderRadius.all(Radius.circular(6)),

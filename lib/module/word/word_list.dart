@@ -9,9 +9,7 @@ class WordList extends StatefulWidget {
 }
 
 class WordListState extends State<WordList> {
-  List _wordDecks = ["", "", "", "", "", ""];
-  bool _isInAsyncCall = true;
-  bool _error = false;
+  List _wordDecks = [];
 
   Widget _buildItem(item) {
     return Card(
@@ -42,10 +40,6 @@ class WordListState extends State<WordList> {
 
       });
     }
-    setState(() {
-      _isInAsyncCall = false;
-      _error = !resultModel.success;
-    });
   }
 
   @override

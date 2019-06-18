@@ -4,11 +4,10 @@ import 'package:chewie/chewie.dart';
 import 'package:video_player/video_player.dart';
 import 'package:boomenglish/widget/video_controls.dart';
 
-import 'package:boomenglish/widget/teacher.dart';
+// import 'package:boomenglish/widget/teacher.dart';
 
 import 'package:boomenglish/utilite/request_manager.dart';
 import 'package:boomenglish/utilite/result_model.dart';
-import 'package:boomenglish/model/course.dart';
 
 class CourseVideo extends StatefulWidget {
   CourseVideo({
@@ -84,9 +83,10 @@ class CourseVideoState extends State<CourseVideo>
 
   void _requestData() async {
     // need login
-    // ResultModel resultModel = await RequestManager.get(
-    //     "/v1/scenario/scene/${this.widget.sceneId}/video_subtitle/", {});
-    // var data = resultModel.data['data'];
+    ResultModel resultModel = await RequestManager.get(
+        "/v1/scenario/scene/${this.widget.sceneId}/video_subtitle/", {});
+    var data = resultModel.data['data'];
+    print(data);
   }
 
   @override

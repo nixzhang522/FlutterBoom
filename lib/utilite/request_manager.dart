@@ -38,10 +38,8 @@ class RequestManager {
     if (connectivityResult == ConnectivityResult.mobile) {
     } else if (connectivityResult == ConnectivityResult.wifi) {
     } else if (connectivityResult == ConnectivityResult.none) {
-      return ResultModel(
-          ResultErrorEvent(ResultCode.NETWORK_ERROR, "请检查网络"),
-          false,
-          ResultCode.NETWORK_ERROR);
+      return ResultModel(ResultErrorEvent(ResultCode.NETWORK_ERROR, "请检查网络"),
+          false, ResultCode.NETWORK_ERROR);
     }
 
     //处理请求头
@@ -94,6 +92,7 @@ class RequestManager {
         print('请求参数：' + params.toString());
         print('请求头: ' + option.headers.toString());
         print('method: ' + option.method);
+        print('statusCode: ' + errorResponse.statusCode.toString());
       }
       return ResultModel(
           ResultCode.errorHandleFunction(
