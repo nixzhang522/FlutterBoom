@@ -94,11 +94,11 @@ class RequestManager {
         print('method: ' + option.method);
         print('statusCode: ' + errorResponse.statusCode.toString());
       }
-      return ResultModel(
-          ResultCode.errorHandleFunction(
-              errorResponse.statusCode, error.message, noTip),
-          false,
-          errorResponse.statusCode);
+      return ResultModel({
+        "data": null,
+        "message": ResultCode.errorHandleFunction(
+            errorResponse.statusCode, error.message, noTip)
+      }, false, errorResponse.statusCode, headers: option.headers);
     }
 
     // debug模式打印相关数据
@@ -113,19 +113,16 @@ class RequestManager {
       }
     }
 
-    try {
-      if (response.statusCode == 200) {
-        return ResultModel(response.data, true, ResultCode.SUCCESS,
-            headers: response.headers);
-      }
-    } catch (error) {
-      return ResultModel(response.data, false, response.statusCode,
+    if (response.statusCode == 200) {
+      return ResultModel(response.data, true, ResultCode.SUCCESS,
+          headers: response.headers);
+    } else {
+      return ResultModel({
+        "data": response.data,
+        "message": ResultCode.errorHandleFunction(
+            response.statusCode, response.data["message"], noTip)
+      }, false, response.statusCode,
           headers: response.headers);
     }
-    return ResultModel(
-        ResultCode.errorHandleFunction(response.statusCode, "", noTip),
-        false,
-        response.statusCode,
-        headers: response.headers);
   }
 }

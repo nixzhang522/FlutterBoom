@@ -9,7 +9,7 @@ class WordList extends StatefulWidget {
 }
 
 class WordListState extends State<WordList> {
-  List _wordDecks = [];
+  List _wordDecks = ["", "", "", "", "", ""];
 
   Widget _buildItem(item) {
     return Card(
@@ -35,10 +35,6 @@ class WordListState extends State<WordList> {
     if (resultModel.success) {
       var data = resultModel.data['data'];
       print(data);
-
-      setState(() {
-
-      });
     }
   }
 

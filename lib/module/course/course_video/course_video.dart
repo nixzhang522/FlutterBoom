@@ -5,6 +5,7 @@ import 'package:video_player/video_player.dart';
 import 'package:boomenglish/widget/video_controls.dart';
 
 // import 'package:boomenglish/widget/teacher.dart';
+import 'package:boomenglish/module/login/login.dart';
 
 import 'package:boomenglish/utilite/request_manager.dart';
 import 'package:boomenglish/utilite/result_model.dart';
@@ -29,7 +30,7 @@ class CourseVideoState extends State<CourseVideo>
   @override
   void initState() {
     super.initState();
-    initTabData();
+    _initTabData();
 
     _videoPlaycontroller = VideoPlayerController.network(
       'https://cdn-files-prod.boomschool.cn/boom-en-china-prod/scene/1339/video_content_low/OchBWrY-RkebQ1CC8ZLovw==.mp4',
@@ -77,7 +78,7 @@ class CourseVideoState extends State<CourseVideo>
     );
   }
 
-  initTabData() {
+  _initTabData() {
     tabList = ['详情', '评价'];
   }
 
@@ -85,8 +86,13 @@ class CourseVideoState extends State<CourseVideo>
     // need login
     ResultModel resultModel = await RequestManager.get(
         "/v1/scenario/scene/${this.widget.sceneId}/video_subtitle/", {});
-    var data = resultModel.data['data'];
-    print(data);
+    if (resultModel.success) {
+      var data = resultModel.data['data'];
+      print(data);
+    }
+    else if (resultModel.code == 403) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => Login()));
+    }
   }
 
   @override

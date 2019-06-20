@@ -36,6 +36,7 @@ class HomeState extends State<Home> {
   var _refreshController = RefreshController();
   bool _isInAsyncCall = true;
   bool _error = false;
+  String _message = '';
 
   @override
   void initState() {
@@ -61,17 +62,48 @@ class HomeState extends State<Home> {
         _recommendCourses = recommendCourses;
       });
     }
+    else {
+      setState(() {
+        _message = resultModel.data["message"];
+      });
+    }
     setState(() {
       _isInAsyncCall = false;
       _error = !resultModel.success;
     });
   }
 
+  static SlideTransition createTransition(
+      Animation<double> animation, Widget child) {
+    return SlideTransition(
+      position: Tween<Offset>(
+        begin: const Offset(0.0, 1.0),
+        end: const Offset(0.0, 0.0),
+      ).animate(animation),
+      child: child,
+    );
+  }
+
   void _joinMyCourses() {
     if (UserManager().isLogin) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => CourseSubscribedList()));
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => CourseSubscribedList()));
     } else {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => Login()));
+      // Navigator.push(context, MaterialPageRoute(builder: (context) => Login()));
+      Navigator.push(
+          context,
+          PageRouteBuilder(pageBuilder: (BuildContext context,
+              Animation<double> animation,
+              Animation<double> secondaryAnimation) {
+            return Login();
+          }, transitionsBuilder: (
+            BuildContext context,
+            Animation<double> animation,
+            Animation<double> secondaryAnimation,
+            Widget child,
+          ) {
+            return HomeState.createTransition(animation, child);
+          }));
     }
   }
 
@@ -120,6 +152,7 @@ class HomeState extends State<Home> {
           backgroundColor: Colors.white,
           body: ModalProgressHUD(
             child: BoomErrorWidget(
+              message: _message,
               show: _error,
               errorTap: () {
                 setState(() {

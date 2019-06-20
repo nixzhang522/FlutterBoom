@@ -41,7 +41,7 @@ class _BoomErrorState extends State<BoomErrorWidget> {
               : Colors.white,
           child: Center(
             child: Text(
-              widget.message != null ? widget.message : "点击重试",
+              widget.message != null && widget.message.length > 0 ? widget.message : "点击重试",
               style: TextStyle(fontSize: 16, color: Color(0xFF808080)),
             ),
           ),
